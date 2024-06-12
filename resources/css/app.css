@@ -1,0 +1,451 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/resources/fonts/nunito/Nunito-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/resources/fonts/nunito/Nunito-BlackItalic.ttf') format('truetype');
+    font-weight: 900;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/resources/fonts/nunito/Nunito-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/resources/fonts/nunito/Nunito-BoldItalic.ttf') format('truetype');
+    font-weight: 700;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/resources/fonts/nunito/Nunito-ExtraBold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/resources/fonts/nunito/Nunito-ExtraBoldItalic.ttf') format('truetype');
+    font-weight: 800;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/resources/fonts/nunito/Nunito-ExtraLight.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/resources/fonts/nunito/Nunito-ExtraLightItalic.ttf') format('truetype');
+    font-weight: 200;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/resources/fonts/nunito/Nunito-Italic.ttf') format('truetype');
+    font-weight: 400;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/resources/fonts/nunito/Nunito-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/resources/fonts/nunito/Nunito-LightItalic.ttf') format('truetype');
+    font-weight: 300;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/resources/fonts/nunito/Nunito-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/resources/fonts/nunito/Nunito-MediumItalic.ttf') format('truetype');
+    font-weight: 500;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/resources/fonts/nunito/Nunito-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/resources/fonts/nunito/Nunito-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/resources/fonts/nunito/Nunito-SemiBoldItalic.ttf') format('truetype');
+    font-weight: 600;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/resources/fonts/nunito/Nunito-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/resources/fonts/nunito/Nunito-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: italic;
+}
+
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: #FDFDFD;
+    margin: 0;
+    padding: 0;
+}
+
+/* CSS Reset от Эрика Мейера, версия 2.0 (8 января 2004) */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+/* HTML5 display-role reset для старых браузеров */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+
+body {
+    line-height: 1;
+}
+
+ol, ul {
+    list-style: none;
+}
+
+blockquote, q {
+    quotes: none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+/* CSS Reset END */
+
+/* Set default values */
+h1, h2, h3, h4, h5, h6 {
+    font-family: Nunito, sans-serif;
+    font-weight: 900;
+}
+h1 {
+    font-size: 24px;
+}
+h2 {
+    font-size: 20px;
+}
+h3 {
+    font-size: 18px;
+}
+h4 {
+    font-size: 16px;
+}
+h5 {
+    font-size: 14px;
+}
+
+p {
+    font-family: Nunito, sans-serif;
+}
+/* END Set default values */
+
+/* Header */
+header {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px 20px;
+    height: 56px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo a {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 30px;
+    margin-right: 10px;
+}
+
+.logo span {
+    font-family: 'Nunito', sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    font-style: normal;
+    color: #007BA1;
+}
+/* Header END */
+
+/* Filters Main Start */
+.filters {
+    padding: 20px;
+}
+.custom-select-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.custom-select {
+    font-size: 16px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f1f6fa;
+    appearance: none; /* Убираем стандартный вид */
+    -webkit-appearance: none; /* Для WebKit (Chrome, Safari) */
+    -moz-appearance: none; /* Для Firefox */
+    cursor: pointer;
+    padding: 10px 16px;
+    /* Установим минимальную ширину, чтобы select не был слишком узким */
+    min-width: 150px;
+    /* Используем max-content для автоматической ширины на основе содержимого */
+    width: auto;
+    /* Трюк для добавления padding для стрелки */
+    padding-right: 36px;
+}
+
+.custom-select-wrapper::after {
+    content: '▼';
+    font-size: 12px;
+    color: #333;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.custom-input {
+    display: inline-block;
+    padding: 10px 15px;
+    margin: 5px 0;
+    font-size: 16px;
+    color: #000; /* Цвет текста */
+    background-color: #f0f8ff; /* Цвет фона */
+    border: 1px solid #d3d3d3; /* Цвет границы */
+    border-radius: 5px; /* Закругленные углы */
+    appearance: none; /* Убирает стандартный стиль браузера */
+    -webkit-appearance: none; /* Убирает стандартный стиль браузера для Safari */
+    -moz-appearance: none; /* Убирает стандартный стиль браузера для Firefox */
+}
+
+.custom-input:focus {
+    outline: none; /* Убирает обводку при фокусе */
+    border-color: #a9a9a9; /* Цвет границы при фокусе */
+}
+/* Filters Main END */
+
+
+/* Main Products List */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+.products-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 16px;
+    padding: 20px;
+}
+
+.product {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 45%;
+    text-align: center;
+}
+
+.illustration {
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* Соотношение сторон 1:1 для квадрата */
+    overflow: hidden;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.illustration img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Обрезает изображение, чтобы оно заполнило контейнер */
+    object-position: center; /* Центрирует изображение */
+    transform: translate(-50%, -50%);
+}
+
+.short-description {
+    padding: 10px 8px;;
+}
+
+.product-name {
+    font-size: 18px;
+    color: #333;
+}
+
+.price {
+    font-size: 20px;
+    color: #333;
+    margin: 10px 0;
+}
+
+.nav-buttons {
+    padding-bottom: 16px;
+    background-color: #fff;
+}
+
+.order-button,
+.detail-order-button {
+    background-color: #8bc34a;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.order-button:hover,
+.detail-order-button:hover {
+    background-color: #7cb342;
+}
+
+/* Main Products List END */
+
+/* Footer Start */
+footer {
+    background: #3d3232;
+    color: white;
+
+    padding: 20px;
+}
+
+footer p {
+    margin: 10px 0;
+}
+/* Footer END */
+
+/* Detail START */
+
+.product-detail {
+    text-align: center;
+    padding: 20px;
+}
+
+.detail-illustration img {
+    width: 100%;
+    height: 300px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.detail-short-description {
+    text-align: left;
+    margin-top: 15px;
+}
+
+.product-description {
+    margin-top: 15px;
+}
+
+.detail-order-button {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    padding: 15px;
+    font-size: 25px;
+}
+
+.available-tag {
+    margin: 10px 0;
+}
+
+.available-tag span {
+    padding: 6px 10px;
+    background-color: #8bc34a;
+    color: white;
+    border-radius: 8px;
+}
+
+.order {
+    padding: 20px;
+}
+
+/* Detail END */
