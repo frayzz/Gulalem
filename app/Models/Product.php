@@ -25,4 +25,14 @@ class Product extends Model
     {
         return $this->belongsToMany(Promotion::class, 'product_promotion');
     }
+
+    public function properties()
+    {
+        return $this->hasMany(ProductProperty::class);
+    }
+
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class);
+    }
 }

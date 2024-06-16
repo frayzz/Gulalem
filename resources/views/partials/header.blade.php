@@ -5,4 +5,9 @@
             <span>GULALEM</span>
         </a>
     </div>
+    <div class="change-language">
+        <a href="">
+            KZ
+        </a>
+    </div>
 </header>
