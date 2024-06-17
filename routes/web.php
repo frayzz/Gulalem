@@ -2,15 +2,19 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Public\IndexController;
+use App\Http\Controllers\Public\OrderController;
 
 
-Route::get('/', [\App\Http\Controllers\Public\IndexController::class, 'index'])->name('public.index');
-Route::get('/{id}/detail', [\App\Http\Controllers\Public\IndexController::class, 'show'])->name('public.show');
-Route::get('/order', [\App\Http\Controllers\Public\OrderController::class, 'index'])->name('order.index');
 
-Route::get('/admin', function () {
-    return view('admin.dashboard');
-})->middleware('auth');
+Route::get('/', [IndexController::class, 'index'])->name('public.index');
+Route::get('/{id}/detail', [IndexController::class, 'show'])->name('public.show');
+Route::get('/order', [OrderController::class, 'index'])->name('order.index');
+
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    Route::resource('products', ProductController::class);
+});
 
 
 Route::middleware('auth')->group(function () {
