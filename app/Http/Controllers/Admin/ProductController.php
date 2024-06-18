@@ -32,18 +32,20 @@ class ProductController extends Controller
             'store_id' => 'required|exists:stores,id',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'properties' => 'array',
-            'properties.*.name' => 'required_with:properties.*.value',
-            'properties.*.value' => 'required_with:properties.*.name',
+            'properties.*.name' => 'nullable',
+            'properties.*.value' => 'nullable',
         ]);
 
         $product = Product::create($request->only('name', 'description', 'price', 'store_id'));
 
         if ($request->has('properties')) {
             foreach ($request->properties as $property) {
-                $product->properties()->create([
-                    'property_name' => $property['name'],
-                    'property_value' => $property['value'],
-                ]);
+                if (!empty($property['name']) && !empty($property['value'])) {
+                    $product->properties()->create([
+                        'property_name' => $property['name'],
+                        'property_value' => $property['value'],
+                    ]);
+                }
             }
         }
 

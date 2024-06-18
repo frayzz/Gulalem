@@ -29,7 +29,22 @@
                 <div class="product">
                     <div class="illustration">
                         <a href="{{ route('public.show', $product->id) }}">
-                            <img src="{{ asset('images/photo_2024-05-26_14-43-06.jpg') }}" alt="">
+                            @if($product->images->isNotEmpty())
+                                <picture>
+                                    @foreach($product->images as $image)
+                                        @if($image->format == 'thumbnail')
+                                            <source srcset="{{ asset('storage/' . $image->image_url) }}" type="image/{{ $image->type }}" media="(max-width: 600px)">
+                                        @elseif($image->format == 'medium')
+                                            <source srcset="{{ asset('storage/' . $image->image_url) }}" type="image/{{ $image->type }}" media="(max-width: 1200px)">
+                                        @elseif($image->format == 'large')
+                                            <source srcset="{{ asset('storage/' . $image->image_url) }}" type="image/{{ $image->type }}">
+                                        @endif
+                                    @endforeach
+                                    <img src="{{ asset('storage/' . $product->images->first()->image_url) }}" alt="{{ $product->name }}" class="w-24 h-24 object-cover">
+                                </picture>
+                            @else
+                                <img src="{{ asset('images/no-image.png') }}" alt="No image" class="w-24 h-24 object-cover">
+                            @endif
                         </a>
                     </div>
                     <div class="short-description">

@@ -7,7 +7,6 @@
         <thead class="bg-gray-200">
         <tr>
             <th class="py-2 px-4">Name</th>
-            <th class="py-2 px-4">Description</th>
             <th class="py-2 px-4">Price</th>
             <th class="py-2 px-4">Store</th>
             <th class="py-2 px-4">Actions</th>
@@ -17,7 +16,6 @@
         @foreach($products as $product)
             <tr class="border-t">
                 <td class="py-2 px-4">{{ $product->name }}</td>
-                <td class="py-2 px-4">{{ $product->description }}</td>
                 <td class="py-2 px-4">{{ $product->price }}</td>
                 <td class="py-2 px-4">{{ $product->store->name }}</td>
                 <td class="py-2 px-4 flex space-x-2">
