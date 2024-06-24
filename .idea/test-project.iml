@@ -8,6 +8,12 @@
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" packagePrefix="Tests\" />
       <sourceFolder url="file://$MODULE_DIR$/tests/Feature" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/tests/Unit" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/new-project/app" isTestSource="false" packagePrefix="App\" />
+      <sourceFolder url="file://$MODULE_DIR$/new-project/database/factories" isTestSource="false" packagePrefix="Database\Factories\" />
+      <sourceFolder url="file://$MODULE_DIR$/new-project/database/seeders" isTestSource="false" packagePrefix="Database\Seeders\" />
+      <sourceFolder url="file://$MODULE_DIR$/new-project/tests" isTestSource="true" packagePrefix="Tests\" />
+      <sourceFolder url="file://$MODULE_DIR$/new-project/tests/Feature" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/new-project/tests/Unit" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/storage/app" />
       <excludeFolder url="file://$MODULE_DIR$/storage/framework" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/brick/math" />
@@ -119,6 +125,32 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/vlucas/phpdotenv" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/voku/portable-ascii" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/webmozart/assert" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/intervention/gif" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/intervention/image" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/composer" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/doctrine/inflector" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/doctrine/lexer" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/dragonmantank/cron-expression" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/fakerphp/faker" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/fruitcake/php-cors" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/guzzlehttp/guzzle" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/guzzlehttp/promises" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/guzzlehttp/psr7" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/guzzlehttp/uri-template" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/psr/container" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/psr/http-client" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/psr/http-factory" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/psr/http-message" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/ralouphie/getallheaders" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/symfony/deprecation-contracts" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/symfony/http-foundation" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/symfony/polyfill-ctype" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/symfony/polyfill-intl-normalizer" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/symfony/polyfill-mbstring" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/symfony/polyfill-php80" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/symfony/polyfill-php83" />
+      <excludeFolder url="file://$MODULE_DIR$/new-project/vendor/webmozart/assert" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/intervention/image-laravel" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

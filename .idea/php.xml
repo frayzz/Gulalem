@@ -126,6 +126,32 @@
       <path value="$PROJECT_DIR$/vendor/ramsey/uuid" />
       <path value="$PROJECT_DIR$/vendor/ramsey/collection" />
       <path value="$PROJECT_DIR$/vendor/dragonmantank/cron-expression" />
+      <path value="$PROJECT_DIR$/new-project/vendor/symfony/deprecation-contracts" />
+      <path value="$PROJECT_DIR$/new-project/vendor/symfony/http-foundation" />
+      <path value="$PROJECT_DIR$/new-project/vendor/guzzlehttp/promises" />
+      <path value="$PROJECT_DIR$/new-project/vendor/guzzlehttp/psr7" />
+      <path value="$PROJECT_DIR$/new-project/vendor/webmozart/assert" />
+      <path value="$PROJECT_DIR$/new-project/vendor/symfony/polyfill-ctype" />
+      <path value="$PROJECT_DIR$/new-project/vendor/guzzlehttp/guzzle" />
+      <path value="$PROJECT_DIR$/new-project/vendor/symfony/polyfill-intl-normalizer" />
+      <path value="$PROJECT_DIR$/new-project/vendor/guzzlehttp/uri-template" />
+      <path value="$PROJECT_DIR$/new-project/vendor/symfony/polyfill-mbstring" />
+      <path value="$PROJECT_DIR$/new-project/vendor/symfony/polyfill-php83" />
+      <path value="$PROJECT_DIR$/new-project/vendor/doctrine/lexer" />
+      <path value="$PROJECT_DIR$/new-project/vendor/symfony/polyfill-php80" />
+      <path value="$PROJECT_DIR$/new-project/vendor/fakerphp/faker" />
+      <path value="$PROJECT_DIR$/new-project/vendor/dragonmantank/cron-expression" />
+      <path value="$PROJECT_DIR$/new-project/vendor/doctrine/inflector" />
+      <path value="$PROJECT_DIR$/new-project/vendor/fruitcake/php-cors" />
+      <path value="$PROJECT_DIR$/new-project/vendor/psr/container" />
+      <path value="$PROJECT_DIR$/new-project/vendor/psr/http-factory" />
+      <path value="$PROJECT_DIR$/new-project/vendor/psr/http-client" />
+      <path value="$PROJECT_DIR$/new-project/vendor/psr/http-message" />
+      <path value="$PROJECT_DIR$/new-project/vendor/ralouphie/getallheaders" />
+      <path value="$PROJECT_DIR$/new-project/vendor/composer" />
+      <path value="$PROJECT_DIR$/vendor/intervention/image-laravel" />
+      <path value="$PROJECT_DIR$/vendor/intervention/gif" />
+      <path value="$PROJECT_DIR$/vendor/intervention/image" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2" />
@@ -135,6 +161,7 @@
   <component name="PhpUnit">
     <phpunit_settings>
       <PhpUnitSettings configuration_file_path="$PROJECT_DIR$/phpunit.xml" custom_loader_path="$PROJECT_DIR$/vendor/autoload.php" use_configuration_file="true" />
+      <PhpUnitSettings configuration_file_path="$PROJECT_DIR$/new-project/phpunit.xml" custom_loader_path="$PROJECT_DIR$/new-project/vendor/autoload.php" use_configuration_file="true" />
     </phpunit_settings>
   </component>
   <component name="PsalmOptionsConfiguration">

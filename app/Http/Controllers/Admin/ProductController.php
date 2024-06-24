@@ -8,6 +8,10 @@ use App\Models\ProductImage;
 use App\Models\ProductProperty;
 use App\Models\Store;
 use Illuminate\Http\Request;
+use Intervention\Image\Laravel\Facades\Image;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -59,6 +63,7 @@ class ProductController extends Controller
                 ]);
             }
         }
+
 
         return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
     }
