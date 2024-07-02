@@ -15,6 +15,9 @@
 <div class="container">
     @yield('content')
 </div>
-@include('partials.footer')
+@if(Route::is('public.index'))
+    @include('partials.footer')
+@endif
+
 @vite('resources/js/app.js')
 </body>
