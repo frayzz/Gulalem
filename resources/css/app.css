@@ -445,11 +445,54 @@ footer p {
     border-radius: 8px;
 }
 
+/* Detail END */
+/* Order Start */
+.input-container input {
+    width: 100%;
+}
+
 .order {
     padding: 20px;
 }
 
-/* Detail END */
+.order p {
+    margin: 15px 0;
+}
+
+.order h3 {
+    margin: 15px 0 5px 0;
+}
+
+.delivery-container {
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+}
+.delivery-options {
+    display: flex;
+    overflow-x: auto;
+    padding: 10px 0;
+}
+.delivery-option {
+    flex: 0 0 auto;
+    padding: 10px;
+    margin-right: 10px;
+    background-color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    min-width: 80px;
+    box-shadow: rgba(6, 5, 50, 0.1) 0px 6px 20px;
+}
+.delivery-option.selected {
+    border: 2px solid #007BA1;
+}
+.delivery-option:last-child {
+    margin-right: 0;
+}
+
+
+/* Order END */
 /* Auth START */
 .auth-section {
     padding: 100px 15px;
