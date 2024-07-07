@@ -7,6 +7,29 @@
         <div class="order">
             <h1>Страница оформления заказа</h1>
             <p>После отправки формы, вам перезвонит оператор и примет у вас оплату</p>
+            <div class="product-container flex items-start">
+                @if($product->images->isNotEmpty())
+                    <picture>
+                        @foreach($product->images as $image)
+                            @if($image->format == 'thumbnail')
+                                <source srcset="{{ asset('storage/' . $image->image_url) }}" type="image/{{ $image->type }}" media="(max-width: 600px)">
+                            @elseif($image->format == 'medium')
+                                <source srcset="{{ asset('storage/' . $image->image_url) }}" type="image/{{ $image->type }}" media="(max-width: 1200px)">
+                            @elseif($image->format == 'large')
+                                <source srcset="{{ asset('storage/' . $image->image_url) }}" type="image/{{ $image->type }}">
+                            @endif
+                        @endforeach
+                        <img src="{{ asset('storage/' . $product->images->first()->image_url) }}" alt="{{ $product->name }}" class="w-24 h-24 object-cover">
+                    </picture>
+                @else
+                    <img src="{{ asset('images/no-image.png') }}" alt="No image" class="w-24 h-24 object-cover">
+                @endif
+                <div class="product-info ml-4">
+                    <h4>{{ $product->name }}</h4>
+                    <p class="product-description">{{ $product->description }}</p>
+                    <p>{{ $product->price }}</p>
+                </div>
+            </div>
             <!--
             <p>ВХОД ЧЕРЕЗ ГУГЛ</p>
             <p>или</p>
@@ -94,12 +117,29 @@
                     document.getElementById('selected-time').value = selectedTime;
                     if (selectedTime === 'CUSTOM') {
                         document.getElementById('custom-time-input').style.display = 'block';
+                        setCustomTimeConstraints();
                     } else {
                         document.getElementById('custom-time-input').style.display = 'none';
                     }
                 });
             });
         });
+
+        function setCustomTimeConstraints() {
+            const customTimeInput = document.getElementById('custom-time');
+            const currentTime = new Date();
+            const minTime = new Date(currentTime.getTime() + 2 * 60 * 60 * 1000); // Через 2 часа
+
+            // Форматируем дату и время для атрибута min
+            const year = minTime.getFullYear();
+            const month = String(minTime.getMonth() + 1).padStart(2, '0');
+            const day = String(minTime.getDate()).padStart(2, '0');
+            const hours = String(minTime.getHours()).padStart(2, '0');
+            const minutes = String(minTime.getMinutes()).padStart(2, '0');
+
+            const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+            customTimeInput.min = minDateTime;
+        }
 
         function submitDeliveryTime() {
             const selectedTime = document.getElementById('selected-time').value;

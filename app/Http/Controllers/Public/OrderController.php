@@ -8,7 +8,8 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    public function index() {
-        return view('pages.order');
+    public function index($id) {
+        $product = Product::find($id);
+        return view('pages.order', compact('product'));
     }
 }

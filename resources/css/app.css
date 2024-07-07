@@ -211,6 +211,7 @@ h5 {
 p {
     font-family: Nunito, sans-serif;
 }
+
 /* END Set default values */
 
 /* Header */
@@ -379,8 +380,10 @@ body {
     color: white;
     padding: 10px 20px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 20px;
+    font-weight: bold;
     transition: background-color 0.3s ease;
+    font-family: 'Nunito';
 }
 
 .order-button:hover,
@@ -500,6 +503,34 @@ footer p {
 #custom-time-input {
     display: none;
     margin-top: 10px;
+}
+
+.order .order-button {
+    margin-top: 15px;
+    width: 100%;
+    padding: 20px;
+}
+
+.product-container {
+    padding: 20px 20px 0 20px;
+    background: #fff;
+    border-radius: 10px;
+}
+
+.product-container img {
+    max-width: 100px;
+    border-radius: 10px;
+}
+
+.product-info {
+    margin-left: 15px;
+}
+
+.product-info .product-description {
+    height: 40px; /* Высота контейнера */
+    width: 70%;
+    overflow: hidden; /* Скрытие содержимого за пределами контейнера */
+    position: relative;
 }
 
 /* Order END */

@@ -58,7 +58,7 @@
                         <div class="price">{{ $product->price }}₸</div>
                     </div>
                     <div class="nav-buttons">
-                        <a href="{{ route('order.index') }}">
+                        <a href="{{ route('order.index', $product->id) }}">
                             <button class="order-button">Заказать</button>
                         </a>
                     </div>

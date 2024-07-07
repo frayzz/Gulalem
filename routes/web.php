@@ -10,7 +10,7 @@ use App\Http\Controllers\Public\OrderController;
 
 Route::get('/', [IndexController::class, 'index'])->name('public.index');
 Route::get('/{id}/detail', [IndexController::class, 'show'])->name('public.show');
-Route::get('/order', [OrderController::class, 'index'])->name('order.index');
+Route::get('/{id}/order', [OrderController::class, 'index'])->name('order.index');
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::resource('products', ProductController::class);
