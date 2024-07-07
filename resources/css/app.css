@@ -473,6 +473,10 @@ footer p {
     overflow-x: auto;
     padding: 10px 0;
 }
+.delivery-options::-webkit-scrollbar {
+    display: none; /* Для Chrome, Safari и Opera */
+}
+
 .delivery-option {
     flex: 0 0 auto;
     padding: 10px;
