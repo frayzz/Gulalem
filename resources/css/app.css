@@ -257,7 +257,7 @@ header {
     margin: 5px 0;
     border: 1px solid #ccc;
     border-radius: 8px;
-    background-color: #f1f6fa;
+    background-color: #fff;
     appearance: none; /* Убираем стандартный вид */
     -webkit-appearance: none; /* Для WebKit (Chrome, Safari) */
     -moz-appearance: none; /* Для Firefox */
@@ -288,9 +288,9 @@ header {
     margin: 5px 0;
     font-size: 16px;
     color: #000; /* Цвет текста */
-    background-color: #f0f8ff; /* Цвет фона */
+    background-color: #fff; /* Цвет фона */
     border: 1px solid #d3d3d3; /* Цвет границы */
-    border-radius: 5px; /* Закругленные углы */
+    border-radius: 10px; /* Закругленные углы */
     appearance: none; /* Убирает стандартный стиль браузера */
     -webkit-appearance: none; /* Убирает стандартный стиль браузера для Safari */
     -moz-appearance: none; /* Убирает стандартный стиль браузера для Firefox */
@@ -298,7 +298,7 @@ header {
 
 .custom-input:focus {
     outline: none; /* Убирает обводку при фокусе */
-    border-color: #a9a9a9; /* Цвет границы при фокусе */
+    border-color: #007BA1fc; /* Цвет границы при фокусе */
 }
 /* Filters Main END */
 

@@ -1,12 +1,15 @@
 @extends('layouts.app')
 
-@section('title', 'Gulalem - твой цветочный мир')
+
 
 @section('content')
     <section>
         <div class="order">
             <h1>Страница оформления заказа</h1>
             <p>После отправки формы, вам перезвонит оператор и примет у вас оплату</p>
+            <p>ВХОД ЧЕРЕЗ ГУГЛ</p>
+            <p>или</p>
+            <p>Заполните форму ниже</p>
             <div class="input-container">
                 <h3>Ваш номер телефона</h3>
                 <input type="text" class="custom-input" placeholder="Ваш номер телефона">

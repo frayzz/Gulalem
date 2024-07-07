@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Gulalem - твой цветочный мир')
+@section('title', $meta['title'])
+@section('description', $meta['description'])
+
+@section('og_title', $meta['og_title'])
+@section('og_description', $meta['og_description'])
+@section('og_image', $meta['og_image'])
 
 @section('content')
 
