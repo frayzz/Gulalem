@@ -26,7 +26,7 @@
                 @endif
                 <div class="product-info ml-4">
                     <h4>{{ $product->name }}</h4>
-                    <p class="product-description">{{ $product->description }}</p>
+                    <div class="product-description">{{ $product->description }}</div>
                     <p>{{ $product->price }}</p>
                 </div>
             </div>
