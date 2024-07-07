@@ -282,7 +282,8 @@ header {
     pointer-events: none;
 }
 
-.custom-input {
+.custom-input,
+#custom-time {
     display: inline-block;
     padding: 10px 15px;
     margin: 5px 0;
@@ -296,7 +297,8 @@ header {
     -moz-appearance: none; /* Убирает стандартный стиль браузера для Firefox */
 }
 
-.custom-input:focus {
+.custom-input:focus,
+#custom-time:focus {
     outline: none; /* Убирает обводку при фокусе */
     border-color: #007BA1fc; /* Цвет границы при фокусе */
 }
@@ -447,7 +449,8 @@ footer p {
 
 /* Detail END */
 /* Order Start */
-.input-container input {
+.input-container input,
+.input-container select {
     width: 100%;
 }
 
@@ -494,7 +497,10 @@ footer p {
 .delivery-option:last-child {
     margin-right: 0;
 }
-
+#custom-time-input {
+    display: none;
+    margin-top: 10px;
+}
 
 /* Order END */
 /* Auth START */

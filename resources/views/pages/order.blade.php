@@ -7,9 +7,11 @@
         <div class="order">
             <h1>Страница оформления заказа</h1>
             <p>После отправки формы, вам перезвонит оператор и примет у вас оплату</p>
+            <!--
             <p>ВХОД ЧЕРЕЗ ГУГЛ</p>
             <p>или</p>
             <p>Заполните форму ниже</p>
+            -->
             <div class="input-container">
                 <h3>Ваш номер телефона</h3>
                 <input type="text" class="custom-input" placeholder="Ваш номер телефона">
@@ -26,6 +28,10 @@
                 <h3>Выберите время доставки</h3>
                 <div class="delivery-options" id="delivery-times"></div>
                 <input type="hidden" id="selected-time" name="selected_time">
+            </div>
+            <div class="input-container" id="custom-time-input">
+                <h3>Выберите дату и время:</h3>
+                <input type="datetime-local" id="custom-time" name="custom_time">
             </div>
             <div class="input-container">
                 <h3>Надпись на открытке (не обязательно)</h3>
@@ -54,7 +60,7 @@
             // Добавляем опцию "Как можно быстрее" и делаем её выбранной по умолчанию
             const asapDiv = document.createElement('div');
             asapDiv.className = 'delivery-option selected';
-            asapDiv.setAttribute('data-time', 'fast');
+            asapDiv.setAttribute('data-time', 'ASAP');
             asapDiv.textContent = 'Как можно быстрее';
             deliveryTimesContainer.appendChild(asapDiv);
             document.getElementById('selected-time').value = 'ASAP';
@@ -72,12 +78,25 @@
                 deliveryTimesContainer.appendChild(timeSlotDiv);
             }
 
+            // Добавляем опцию "Выбрать свое время"
+            const customTimeDiv = document.createElement('div');
+            customTimeDiv.className = 'delivery-option';
+            customTimeDiv.setAttribute('data-time', 'CUSTOM');
+            customTimeDiv.textContent = 'Выбрать свое время';
+            deliveryTimesContainer.appendChild(customTimeDiv);
+
             const deliveryOptions = document.querySelectorAll('.delivery-option');
             deliveryOptions.forEach(option => {
                 option.addEventListener('click', function() {
                     deliveryOptions.forEach(opt => opt.classList.remove('selected'));
                     option.classList.add('selected');
-                    document.getElementById('selected-time').value = option.getAttribute('data-time');
+                    const selectedTime = option.getAttribute('data-time');
+                    document.getElementById('selected-time').value = selectedTime;
+                    if (selectedTime === 'CUSTOM') {
+                        document.getElementById('custom-time-input').style.display = 'block';
+                    } else {
+                        document.getElementById('custom-time-input').style.display = 'none';
+                    }
                 });
             });
         });
@@ -85,8 +104,18 @@
         function submitDeliveryTime() {
             const selectedTime = document.getElementById('selected-time').value;
             if (selectedTime) {
-                alert('Вы выбрали время доставки: ' + selectedTime);
-                // Здесь можно отправить форму или выполнить другие действия
+                if (selectedTime === 'CUSTOM') {
+                    const customTime = document.getElementById('custom-time').value;
+                    if (customTime) {
+                        alert('Вы выбрали свое время доставки: ' + customTime);
+                        // Здесь можно отправить форму или выполнить другие действия
+                    } else {
+                        alert('Пожалуйста, выберите дату и время.');
+                    }
+                } else {
+                    alert('Вы выбрали время доставки: ' + selectedTime);
+                    // Здесь можно отправить форму или выполнить другие действия
+                }
             } else {
                 alert('Пожалуйста, выберите время доставки.');
             }
