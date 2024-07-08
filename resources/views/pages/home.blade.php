@@ -4,6 +4,13 @@
 
 @section('content')
     <section>
+        <div class="active-orders">
+            @if($activeOrders)
+                @php
+                    echo count($activeOrders);
+                @endphp
+            @endif
+        </div>
         <div class="filters">
             <form method="GET" action="{{ route('public.index') }}">
                 <div class="custom-select-wrapper">

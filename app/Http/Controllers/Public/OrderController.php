@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -35,6 +36,12 @@ class OrderController extends Controller
         $order->card_message = $request->card_message;
         $order->payment_method = $request->payment_method;
         $order->status = 'not-pay'; // Начальный статус
+
+        // Если пользователь авторизован, то привязать заказ к пользователю
+        if (Auth::check()) {
+            $order->user_id = Auth::id();
+        }
+
         $order->save();
 
         return redirect()->back()->with('success', 'Заказ успешно оформлен!');

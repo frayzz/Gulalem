@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class IndexController extends Controller
 {
@@ -12,6 +13,15 @@ class IndexController extends Controller
         // Получаем значения фильтров из запроса
         $sort = $request->input('sort');
         $price = $request->input('price');
+
+        // Если пользователь авторизован
+        if (Auth::check()) {
+            $user = Auth::user(); // Получаем текущего авторизованного пользователя
+
+            if ($user->orders()->exists()) {
+                $activeOrders = $user->orders()->select('id', 'status', 'order_details')->get();
+            }
+        }
 
         // Базовый запрос
         $query = Product::query();
@@ -55,7 +65,7 @@ class IndexController extends Controller
         // Получаем отфильтрованные данные
         $products = $query->get();
 
-        return view('pages.home', compact('products'));
+        return view('pages.home', compact('products', 'activeOrders'));
     }
 
     public function show($id) {

@@ -101,6 +101,8 @@
                     <span class="text-red-500">{{ $message }}</span>
                     @enderror
                 </div>
+                <h3>Что бы следить за вашим заказом и не заполнять все это повторно, нажмите кноку ниже</h3>
+                <button type="submit" class="order-button">Зарегестрироваться и оформить заказ</button>
                 <button type="submit" class="order-button">Оформить заказ</button>
             </form>
         </div>
