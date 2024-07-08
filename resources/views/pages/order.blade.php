@@ -1,12 +1,27 @@
 @extends('layouts.app')
 
-
-
 @section('content')
     <section>
         <div class="order">
             <h1>Страница оформления заказа</h1>
             <p>После отправки формы, вам перезвонит оператор и примет у вас оплату</p>
+            @if(session('success'))
+                <div id="success-message" class="fixed inset-0 bg-white flex items-center justify-center z-50">
+                    <div class="text-center">
+                        <svg class="w-16 h-16 text-green-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <p class="mt-4 text-lg font-semibold">Заказ успешно оформлен!</p>
+                        <p class="text-lg font-semibold">Мы сейчас перенаправим вас в главное меню</p>
+                    </div>
+                </div>
+                <script>
+                    setTimeout(() => {
+                        document.getElementById('success-message').style.display = 'none';
+                        window.location.href = '{{ url('/') }}';
+                    }, 5000); // Перенаправление через 2 секунды
+                </script>
+            @endif
             <div class="product-container flex items-start">
                 @if($product->images->isNotEmpty())
                     <picture>
@@ -30,50 +45,67 @@
                     <p>{{ $product->price }}</p>
                 </div>
             </div>
-            <!--
-            <p>ВХОД ЧЕРЕЗ ГУГЛ</p>
-            <p>или</p>
-            <p>Заполните форму ниже</p>
-            -->
-            <div class="input-container">
-                <h3>Ваш номер телефона</h3>
-                <input type="text" class="custom-input" placeholder="Ваш номер телефона">
-            </div>
-            <div class="input-container">
-                <h3>Телефон получателя (не обязательно)</h3>
-                <input type="text" class="custom-input" placeholder="Телефон получателя">
-            </div>
-            <div class="input-container">
-                <h3>Адресс доставки</h3>
-                <input type="text" class="custom-input" placeholder="Адресс доставки">
-            </div>
-            <div class="input-container">
-                <h3>Выберите время доставки</h3>
-                <div class="delivery-options" id="delivery-times"></div>
-                <input type="hidden" id="selected-time" name="selected_time">
-            </div>
-            <div class="input-container" id="custom-time-input">
-                <h3>Выберите дату и время:</h3>
-                <input type="datetime-local" id="custom-time" name="custom_time">
-            </div>
-            <div class="input-container">
-                <h3>Надпись на открытке (не обязательно)</h3>
-                <input type="text" class="custom-input" placeholder="Надпись на открытке">
-            </div>
-            <div class="input-container">
-                <h3>Способ оплаты</h3>
-                <select class="custom-select">
-                    <option value="" selected>Звонок менеджера ( Счет на Kaspi )</option>
-                    <option value="">Банковская карта</option>
-                    <option value="" disabled>Kaspi QR ( Скоро )</option>
-                </select>
-            </div>
-
-            <button class="order-button" onclick="submitDeliveryTime()">Оформить заказ</button>
+            <form action="{{ route('submit.order') }}" method="POST">
+                @csrf
+                <div class="input-container">
+                    <h3>Ваш номер телефона</h3>
+                    <input type="text" class="custom-input" name="user_phone" placeholder="Ваш номер телефона" value="{{ old('user_phone') }}">
+                    @error('user_phone')
+                    <span class="text-red-500">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div class="input-container">
+                    <h3>Телефон получателя (не обязательно)</h3>
+                    <input type="text" class="custom-input" name="recipient_phone" placeholder="Телефон получателя" value="{{ old('recipient_phone') }}">
+                    @error('recipient_phone')
+                    <span class="text-red-500">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div class="input-container">
+                    <h3>Адресс доставки</h3>
+                    <input type="text" class="custom-input" name="address" placeholder="Адресс доставки" value="{{ old('address') }}">
+                    @error('address')
+                    <span class="text-red-500">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div class="input-container">
+                    <h3>Выберите время доставки</h3>
+                    <div class="delivery-options" id="delivery-times"></div>
+                    <input type="hidden" id="selected-time" name="selected_time" value="{{ old('selected_time', 'ASAP') }}">
+                    @error('selected_time')
+                    <span class="text-red-500">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div class="input-container" id="custom-time-input" style="display: none;">
+                    <h3>Выберите дату и время:</h3>
+                    <input type="datetime-local" id="custom-time" name="custom_time" value="{{ old('custom_time') }}">
+                    @error('custom_time')
+                    <span class="text-red-500">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div class="input-container">
+                    <h3>Надпись на открытке (не обязательно)</h3>
+                    <input type="text" class="custom-input" name="card_message" placeholder="Надпись на открытке" value="{{ old('card_message') }}">
+                    @error('card_message')
+                    <span class="text-red-500">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div class="input-container">
+                    <h3>Способ оплаты</h3>
+                    <select class="custom-select" name="payment_method">
+                        <option value="call_manager" {{ old('payment_method') == 'call_manager' ? 'selected' : '' }}>Звонок менеджера ( Счет на Kaspi )</option>
+                        <option value="bank_card" {{ old('payment_method') == 'bank_card' ? 'selected' : '' }}>Банковская карта</option>
+                        <option value="kaspi_qr" disabled>Kaspi QR ( Скоро )</option>
+                    </select>
+                    @error('payment_method')
+                    <span class="text-red-500">{{ $message }}</span>
+                    @enderror
+                </div>
+                <button type="submit" class="order-button">Оформить заказ</button>
+            </form>
         </div>
     </section>
     <script>
-
         document.addEventListener('DOMContentLoaded', function() {
             const deliveryTimesContainer = document.getElementById('delivery-times');
             const currentTime = new Date();
@@ -83,7 +115,7 @@
             // Добавляем опцию "Как можно быстрее" и делаем её выбранной по умолчанию
             const asapDiv = document.createElement('div');
             asapDiv.className = 'delivery-option selected';
-            asapDiv.setAttribute('data-time', 'ASAP');
+            asapDiv.setAttribute('data-time', 'fast');
             asapDiv.textContent = 'Как можно быстрее';
             deliveryTimesContainer.appendChild(asapDiv);
             document.getElementById('selected-time').value = 'ASAP';
@@ -123,6 +155,11 @@
                     }
                 });
             });
+
+            // Показать поле ввода даты и времени, если была выбрана опция "CUSTOM"
+            if (document.getElementById('selected-time').value === 'CUSTOM') {
+                document.getElementById('custom-time-input').style.display = 'block';
+            }
         });
 
         function setCustomTimeConstraints() {
@@ -139,26 +176,6 @@
 
             const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
             customTimeInput.min = minDateTime;
-        }
-
-        function submitDeliveryTime() {
-            const selectedTime = document.getElementById('selected-time').value;
-            if (selectedTime) {
-                if (selectedTime === 'CUSTOM') {
-                    const customTime = document.getElementById('custom-time').value;
-                    if (customTime) {
-                        alert('Вы выбрали свое время доставки: ' + customTime);
-                        // Здесь можно отправить форму или выполнить другие действия
-                    } else {
-                        alert('Пожалуйста, выберите дату и время.');
-                    }
-                } else {
-                    alert('Вы выбрали время доставки: ' + selectedTime);
-                    // Здесь можно отправить форму или выполнить другие действия
-                }
-            } else {
-                alert('Пожалуйста, выберите время доставки.');
-            }
         }
     </script>
 @endsection

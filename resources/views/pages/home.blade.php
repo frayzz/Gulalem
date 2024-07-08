@@ -3,7 +3,6 @@
 @section('title', 'Gulalem - твой цветочный мир')
 
 @section('content')
-    <a href="/admin/products">Admin</a>
     <section>
         <div class="filters">
             <div class="custom-select-wrapper">
