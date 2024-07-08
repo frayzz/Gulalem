@@ -567,10 +567,18 @@ footer p {
 }
 
 .product-info .product-description {
-    height: 40px; /* Высота контейнера */
-    width: 70%;
-    overflow: hidden; /* Скрытие содержимого за пределами контейнера */
     position: relative;
+    height: 50px;
+    overflow: hidden;
+}
+.product-info .product-description::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50px; /* Высота градиента */
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
 }
 
 /* Order END */

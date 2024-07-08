@@ -8,8 +8,52 @@ use Illuminate\Http\Request;
 
 class IndexController extends Controller
 {
-    public function index() {
-        $products = Product::with('images')->get();
+    public function index(Request $request) {
+        // Получаем значения фильтров из запроса
+        $sort = $request->input('sort');
+        $price = $request->input('price');
+
+        // Базовый запрос
+        $query = Product::query();
+
+        // Обработка сортировки
+        if ($sort) {
+            switch ($sort) {
+                case 'popular':
+                    $query->orderBy('popularity', 'desc');
+                    break;
+                case 'new':
+                    $query->orderBy('created_at', 'desc');
+                    break;
+                case 'price_low_high':
+                    $query->orderBy('price', 'asc');
+                    break;
+                case 'price_high_low':
+                    $query->orderBy('price', 'desc');
+                    break;
+            }
+        }
+
+        // Обработка фильтрации по цене
+        if ($price) {
+            switch ($price) {
+                case '15000':
+                    $query->where('price', '<=', 15000);
+                    break;
+                case '20000':
+                    $query->where('price', '<=', 20000);
+                    break;
+                case '40000':
+                    $query->where('price', '<=', 40000);
+                    break;
+                case '60000':
+                    $query->where('price', '<=', 60000);
+                    break;
+            }
+        }
+
+        // Получаем отфильтрованные данные
+        $products = $query->get();
 
         return view('pages.home', compact('products'));
     }
