@@ -248,10 +248,6 @@ header {
 .filters {
     padding: 20px;
 }
-.custom-select-wrapper {
-    position: relative;
-    display: inline-block;
-}
 
 .custom-select {
     font-size: 16px;
@@ -270,17 +266,6 @@ header {
     width: auto;
     /* Трюк для добавления padding для стрелки */
     padding-right: 36px;
-}
-
-.custom-select-wrapper::after {
-    content: '▼';
-    font-size: 12px;
-    color: #333;
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
 }
 
 .custom-input,

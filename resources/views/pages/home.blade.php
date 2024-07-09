@@ -13,14 +13,11 @@
         </div>
         <div class="filters">
             <form method="GET" action="{{ route('public.index') }}">
-                <div class="custom-select-wrapper">
                     <select class="custom-select" name="sort" onchange="this.form.submit()">
                         <option value="new" {{ request('sort') == 'new' ? 'selected' : '' }}>Новинки</option>
                         <option value="price_low_high" {{ request('sort') == 'price_low_high' ? 'selected' : '' }}>Цена: по возрастанию</option>
                         <option value="price_high_low" {{ request('sort') == 'price_high_low' ? 'selected' : '' }}>Цена: по убыванию</option>
                     </select>
-                </div>
-                <div class="custom-select-wrapper">
                     <select class="custom-select" name="price" onchange="this.form.submit()">
                         <option value="">Любая цена</option>
                         <option value="15000" {{ request('price') == '15000' ? 'selected' : '' }}>До 15 000тг</option>
@@ -28,7 +25,6 @@
                         <option value="40000" {{ request('price') == '40000' ? 'selected' : '' }}>До 40 000тг</option>
                         <option value="60000" {{ request('price') == '60000' ? 'selected' : '' }}>До 60 000тг</option>
                     </select>
-                </div>
             </form>
         </div>
 

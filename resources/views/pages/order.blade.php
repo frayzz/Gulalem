@@ -78,7 +78,7 @@
                         <select name="city" class="custom-select" disabled>
                             <option value="Алматы">г. Алматы</option>
                         </select>
-                        <select type="text" class="custom-input" name="region" placeholder="Адресс доставки" value="{{ old('address') }}">
+                        <select class="custom-input" name="region" placeholder="Адресс доставки" value="{{ old('address') }}">
                             <option selected disabled hidden>Выберите район</option>
                             <option value="Алмалинский">Алмалинский р-н</option>
                             <option value="Наурызбайский">Наурызбайский р-н</option>
