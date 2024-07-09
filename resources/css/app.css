@@ -581,6 +581,18 @@ footer p {
     background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
 }
 
+.phone-input-wrapper {
+    display: flex;
+    align-items: center;
+}
+.phone-prefix {
+    margin-right: 5px;
+    font-weight: bold;
+}
+.phone-input {
+    flex: 1;
+}
+
 /* Order END */
 /* Auth START */
 .auth-section {
