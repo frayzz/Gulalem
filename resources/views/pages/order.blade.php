@@ -3,8 +3,11 @@
 @section('content')
     <section>
         <div class="order">
-            <h1>Страница оформления заказа</h1>
-            <p>После отправки формы, вам перезвонит оператор и примет у вас оплату</p>
+            <div class="order-header">
+                <h1>Страница оформления заказа</h1>
+                <p>После отправки формы, вам перезвонит оператор и примет у вас оплату</p>
+            </div>
+
             @if(session('success'))
                 <div id="success-message" class="fixed inset-0 bg-white flex items-center justify-center z-50">
                     <div class="text-center">
@@ -59,14 +62,35 @@
                 </div>
                 <div class="input-container">
                     <h3>Телефон получателя (не обязательно)</h3>
-                    <input type="text" class="custom-input" name="recipient_phone" placeholder="Телефон получателя" value="{{ old('recipient_phone') }}">
+
+                    <div class="phone-input-wrapper">
+                        <span class="phone-prefix">+7</span>
+                        <input type="text" class="custom-input phone-input" name="recipient_phone" placeholder="(777) 445-45-75" value="{{ old('recipient_phone') }}">
+                    </div>
+                    <span><i>указывать, если вы заказываете не себе</i></span>
                     @error('recipient_phone')
                     <span class="text-red-500">{{ $message }}</span>
                     @enderror
                 </div>
                 <div class="input-container">
                     <h3>Адресс доставки</h3>
-                    <input type="text" class="custom-input" name="address" placeholder="Адресс доставки" value="{{ old('address') }}">
+                    <div class="">
+                        <select name="city" class="custom-select" disabled>
+                            <option value="Алматы">г. Алматы</option>
+                        </select>
+                        <select type="text" class="custom-input" name="region" placeholder="Адресс доставки" value="{{ old('address') }}">
+                            <option selected disabled hidden>Выберите район</option>
+                            <option value="Алмалинский">Алмалинский р-н</option>
+                            <option value="Наурызбайский">Наурызбайский р-н</option>
+                            <option value="Жетысуский">Жетысуский р-н</option>
+                            <option value="Туркисибский">Туркисибский р-н</option>
+                            <option value="Бостандыкский">Бостандыкский р-н</option>
+                            <option value="Алатауский">Алатауский р-н</option>
+                            <option value="Ауэзовский">Ауэзовский р-н</option>
+                        </select>
+                        <input type="text" class="custom-input" name="address" placeholder="Адресс доставки" value="{{ old('address') }}">
+                    </div>
+
                     @error('address')
                     <span class="text-red-500">{{ $message }}</span>
                     @enderror
@@ -88,7 +112,7 @@
                 </div>
                 <div class="input-container">
                     <h3>Надпись на открытке (не обязательно)</h3>
-                    <input type="text" class="custom-input" name="card_message" placeholder="Надпись на открытке" value="{{ old('card_message') }}">
+                    <textarea type="text" class="custom-input" name="card_message" placeholder="Надпись на открытке" value="{{ old('card_message') }}"></textarea>
                     @error('card_message')
                     <span class="text-red-500">{{ $message }}</span>
                     @enderror
@@ -187,19 +211,21 @@
 
         // Обработка номера телефона
         document.addEventListener('DOMContentLoaded', function() {
-            const phoneInput = document.querySelector('.phone-input');
-    
-            phoneInput.addEventListener('input', function() {
-                let value = phoneInput.value.replace(/\D/g, '');
-                if (value.length > 10) value = value.slice(0, 10);
-    
-                let formattedValue = '';
-                if (value.length > 0) formattedValue += '(' + value.slice(0, 3);
-                if (value.length >= 4) formattedValue += ') ' + value.slice(3, 6);
-                if (value.length >= 7) formattedValue += '-' + value.slice(6, 8);
-                if (value.length >= 9) formattedValue += '-' + value.slice(8, 10);
-    
-                phoneInput.value = formattedValue;
+            const phoneInputs = document.querySelectorAll('.phone-input');
+
+            phoneInputs.forEach(function(phoneInput) {
+                phoneInput.addEventListener('input', function() {
+                    let value = phoneInput.value.replace(/\D/g, '');
+                    if (value.length > 10) value = value.slice(0, 10);
+
+                    let formattedValue = '';
+                    if (value.length > 0) formattedValue += '(' + value.slice(0, 3);
+                    if (value.length >= 4) formattedValue += ') ' + value.slice(3, 6);
+                    if (value.length >= 7) formattedValue += '-' + value.slice(6, 8);
+                    if (value.length >= 9) formattedValue += '-' + value.slice(8, 10);
+
+                    phoneInput.value = formattedValue;
+                });
             });
         });
     </script>

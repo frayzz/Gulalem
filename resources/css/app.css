@@ -141,7 +141,7 @@ h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
 del, dfn, em, img, ins, kbd, q, s, samp,
 small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
+u, center,
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
@@ -492,12 +492,20 @@ footer p {
 
 /* Detail END */
 /* Order Start */
+.input-container {
+    margin-top: 15px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 15px;
+}
+
 .input-container input,
-.input-container select {
+.input-container select,
+.input-container textarea {
     width: 100%;
 }
 
-.order {
+.order-header {
     padding: 20px;
 }
 
