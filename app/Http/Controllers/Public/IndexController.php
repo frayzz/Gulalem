@@ -65,7 +65,11 @@ class IndexController extends Controller
         // Получаем отфильтрованные данные
         $products = $query->get();
 
-        return view('pages.home', compact('products', 'activeOrders'));
+        if ( $activeOrders ) {  
+            return view('pages.home', compact('products', 'activeOrders'));
+        } else {
+            return view('pages.home', compact('products'));
+        }
     }
 
     public function show($id) {
