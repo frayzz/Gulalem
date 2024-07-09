@@ -19,7 +19,7 @@
                     setTimeout(() => {
                         document.getElementById('success-message').style.display = 'none';
                         window.location.href = '{{ url('/') }}';
-                    }, 5000); // Перенаправление через 2 секунды
+                    }, 5000); // Перенаправление через 5 секунд
                 </script>
             @endif
             <div class="product-container flex items-start">
@@ -49,10 +49,13 @@
                 @csrf
                 <div class="input-container">
                     <h3>Ваш номер телефона</h3>
-                    <input type="text" class="custom-input" name="user_phone" placeholder="Ваш номер телефона" value="{{ old('user_phone') }}">
-                    @error('user_phone')
-                    <span class="text-red-500">{{ $message }}</span>
-                    @enderror
+                    <div class="phone-input-wrapper">
+                        <span class="phone-prefix">+7</span>
+                        <input type="text" class="custom-input phone-input @error('user_phone') border-red-500 bg-red-100 @enderror" name="user_phone" placeholder="(777) 445-45-75" value="{{ old('user_phone') }}">
+                        @error('user_phone')
+                            <span class="text-red-500">{{ $message }}</span>
+                        @enderror
+                    </div>
                 </div>
                 <div class="input-container">
                     <h3>Телефон получателя (не обязательно)</h3>
@@ -101,8 +104,10 @@
                     <span class="text-red-500">{{ $message }}</span>
                     @enderror
                 </div>
+                <!--
                 <h3>Что бы следить за вашим заказом и не заполнять все это повторно, нажмите кноку ниже</h3>
                 <button type="submit" class="order-button">Зарегестрироваться и оформить заказ</button>
+                -->
                 <button type="submit" class="order-button">Оформить заказ</button>
             </form>
         </div>
@@ -179,5 +184,23 @@
             const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
             customTimeInput.min = minDateTime;
         }
+
+        // Обработка номера телефона
+        document.addEventListener('DOMContentLoaded', function() {
+            const phoneInput = document.querySelector('.phone-input');
+    
+            phoneInput.addEventListener('input', function() {
+                let value = phoneInput.value.replace(/\D/g, '');
+                if (value.length > 10) value = value.slice(0, 10);
+    
+                let formattedValue = '';
+                if (value.length > 0) formattedValue += '(' + value.slice(0, 3);
+                if (value.length >= 4) formattedValue += ') ' + value.slice(3, 6);
+                if (value.length >= 7) formattedValue += '-' + value.slice(6, 8);
+                if (value.length >= 9) formattedValue += '-' + value.slice(8, 10);
+    
+                phoneInput.value = formattedValue;
+            });
+        });
     </script>
 @endsection
