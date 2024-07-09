@@ -5,7 +5,7 @@
 @section('content')
     <section>
         <div class="active-orders">
-            @if($activeOrders)
+            @if( isset($activeOrders) )
                 @php
                     echo count($activeOrders);
                 @endphp
