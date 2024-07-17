@@ -4,15 +4,150 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\PhoneVerification;
 use App\Models\Product;
+use App\Models\User;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class OrderController extends Controller
 {
-    public function index($id) {
+    protected $mobizon;
+
+    public function __construct()
+    {
+        $this->mobizon = new Client([
+            'base_uri' => 'https://api.mobizon.kz/',
+        ]);
+    }
+
+    public function index($id)
+    {
         $product = Product::find($id);
         return view('pages.order', compact('product'));
+    }
+
+    public function sendVerificationCode(Request $request)
+    {
+        $request->validate([
+            'user_phone' => 'required|string',
+        ]);
+
+        $phone = preg_replace('/\D/', '', $request->user_phone);
+        if (strlen($phone) == 10) {
+            $phone = '7' . $phone;
+        }
+
+        // Проверка на частоту отправки кодов
+        $recentAttempt = PhoneVerification::where('phone', $phone)
+            ->where('created_at', '>', Carbon::now()->subMinutes(10))
+            ->count();
+
+        if ($recentAttempt >= 3) {
+            return response()->json(['message' => 'Превышено количество попыток отправки кода. Попробуйте позже.'], 429);
+        }
+
+        $code = rand(1000, 9999); // Генерация случайного 4-значного кода
+
+        if (app()->environment('local')) {
+            // В среде разработки сохраняем код в лог
+            Log::info("Verification code for {$phone}: {$code}");
+        } else {
+            // В боевой среде отправляем SMS с использованием Mobizon
+            try {
+                $response = $this->mobizon->post('service/message/sendSmsMessage', [
+                    'query' => [
+                        'apiKey' => config('mobizon.api_key'),
+                        'recipient' => $phone,
+                        'text' => 'Gulalem.kz: ' . $code . ' ваш код подтверждения',
+                    ],
+                ]);
+
+                $responseBody = json_decode($response->getBody(), true);
+
+                if ($responseBody['code'] !== 0) {
+                    Log::error('Mobizon SMS send error: ' . $responseBody['message']);
+                    return response()->json(['message' => 'Ошибка отправки SMS.'], 500);
+                }
+            } catch (\Exception $e) {
+                Log::error('Mobizon SMS send exception: ' . $e->getMessage());
+                return response()->json(['message' => 'Ошибка отправки SMS.'], 500);
+            }
+        }
+
+        // Сохранение кода и телефона в базе данных
+        PhoneVerification::updateOrCreate(
+            ['phone' => $phone],
+            [
+                'code' => $code,
+                'expires_at' => Carbon::now()->addMinutes(10)
+            ]
+        );
+
+        return response()->json(['message' => 'Код отправлен.'], 200);
+    }
+
+    public function verifyCode(Request $request)
+    {
+        $request->validate([
+            'verification_code' => 'required|integer',
+            'user_phone' => 'required|string',
+            'recipient_phone' => 'nullable|string',
+            'address' => 'required|string',
+            'selected_time' => 'required|string',
+            'custom_time' => 'nullable|date',
+            'card_message' => 'nullable|string',
+            'payment_method' => 'required|string',
+        ]);
+
+        $phone = preg_replace('/\D/', '', $request->user_phone);
+        if (strlen($phone) == 10) {
+            $phone = '7' . $phone;
+        }
+
+        $verification = PhoneVerification::where('phone', $phone)
+            ->where('code', $request->verification_code)
+            ->where('expires_at', '>', Carbon::now())
+            ->first();
+
+        if ($verification) {
+            $user = User::firstOrCreate(
+                ['phone' => $phone],
+                [
+                    'name' => 'User-' . $phone,
+                    'password' => bcrypt('temporary_password')
+                ]
+            );
+            Auth::login($user);
+
+            $this->createOrder($request, $phone);
+
+            // Удаление записи верификации после успешной проверки
+            $verification->delete();
+
+            return response()->json(['message' => 'Заказ успешно оформлен и номер телефона подтвержден.'], 200);
+        } else {
+            return response()->json(['message' => 'Неверный код подтверждения или код истек.'], 400);
+        }
+    }
+
+    private function createOrder($request, $phone)
+    {
+        $order = new Order();
+        $order->user_phone = $phone;
+        $order->recipient_phone = $request->recipient_phone;
+        $order->address = $request->address;
+        $order->selected_time = $request->selected_time;
+        $order->custom_time = $request->custom_time;
+        $order->card_message = $request->card_message;
+        $order->payment_method = $request->payment_method;
+        $order->status = 'not-pay';
+        $order->user_id = Auth::id();
+
+        $order->save();
     }
 
     public function store(Request $request)
@@ -27,23 +162,11 @@ class OrderController extends Controller
             'payment_method' => 'required|string',
         ]);
 
-        $order = new Order();
-        $order->user_phone = $request->user_phone;
-        $order->recipient_phone = $request->recipient_phone;
-        $order->address = $request->address;
-        $order->selected_time = $request->selected_time;
-        $order->custom_time = $request->custom_time;
-        $order->card_message = $request->card_message;
-        $order->payment_method = $request->payment_method;
-        $order->status = 'not-pay'; // Начальный статус
-
-        // Если пользователь авторизован, то привязать заказ к пользователю
         if (Auth::check()) {
-            $order->user_id = Auth::id();
+            $this->createOrder($request, Auth::user()->phone);
+            return redirect()->back()->with('success', 'Заказ успешно оформлен!');
+        } else {
+            return redirect()->route('send.verification.code', $request->only('user_phone', 'recipient_phone', 'address', 'selected_time', 'custom_time', 'card_message', 'payment_method'));
         }
-
-        $order->save();
-
-        return redirect()->back()->with('success', 'Заказ успешно оформлен!');
     }
 }

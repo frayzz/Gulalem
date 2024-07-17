@@ -25,6 +25,7 @@
                     }, 5000); // Перенаправление через 5 секунд
                 </script>
             @endif
+
             <div class="product-container flex items-start">
                 @if($product->images->isNotEmpty())
                     <picture>
@@ -34,7 +35,7 @@
                             @elseif($image->format == 'medium')
                                 <source srcset="{{ asset('storage/' . $image->image_url) }}" type="image/{{ $image->type }}" media="(max-width: 1200px)">
                             @elseif($image->format == 'large')
-                                <source srcset="{{ asset('storage/' . $image->image_url) }}" type="image/{{ $image->type }}">
+                                <source srcset="{{ asset('storage/' . $image->image_url) }}" type="image="{{ $image->type }}">
                             @endif
                         @endforeach
                         <img src="{{ asset('storage/' . $product->images->first()->image_url) }}" alt="{{ $product->name }}" class="w-24 h-24 object-cover">
@@ -48,7 +49,8 @@
                     <p>{{ $product->price }}</p>
                 </div>
             </div>
-            <form action="{{ route('submit.order') }}" method="POST">
+
+            <form id="order-form" method="POST">
                 @csrf
                 <div class="input-container">
                     <h3>Ваш номер телефона</h3>
@@ -56,13 +58,13 @@
                         <span class="phone-prefix">+7</span>
                         <input type="text" class="custom-input phone-input @error('user_phone') border-red-500 bg-red-100 @enderror" name="user_phone" placeholder="(777) 445-45-75" value="{{ old('user_phone') }}">
                         @error('user_phone')
-                            <span class="text-red-500">{{ $message }}</span>
+                        <span class="text-red-500">{{ $message }}</span>
                         @enderror
                     </div>
                 </div>
+
                 <div class="input-container">
                     <h3>Телефон получателя (не обязательно)</h3>
-
                     <div class="phone-input-wrapper">
                         <span class="phone-prefix">+7</span>
                         <input type="text" class="custom-input phone-input" name="recipient_phone" placeholder="(777) 445-45-75" value="{{ old('recipient_phone') }}">
@@ -72,6 +74,7 @@
                     <span class="text-red-500">{{ $message }}</span>
                     @enderror
                 </div>
+
                 <div class="input-container">
                     <h3>Адресс доставки</h3>
                     <div class="">
@@ -90,11 +93,11 @@
                         </select>
                         <input type="text" class="custom-input" name="address" placeholder="Адресс доставки" value="{{ old('address') }}">
                     </div>
-
                     @error('address')
                     <span class="text-red-500">{{ $message }}</span>
                     @enderror
                 </div>
+
                 <div class="input-container">
                     <h3>Выберите время доставки</h3>
                     <div class="delivery-options" id="delivery-times"></div>
@@ -103,6 +106,7 @@
                     <span class="text-red-500">{{ $message }}</span>
                     @enderror
                 </div>
+
                 <div class="input-container" id="custom-time-input" style="display: none;">
                     <h3>Выберите дату и время:</h3>
                     <input type="datetime-local" id="custom-time" name="custom_time" value="{{ old('custom_time') }}">
@@ -110,6 +114,7 @@
                     <span class="text-red-500">{{ $message }}</span>
                     @enderror
                 </div>
+
                 <div class="input-container">
                     <h3>Надпись на открытке (не обязательно)</h3>
                     <textarea type="text" class="custom-input" name="card_message" placeholder="Надпись на открытке" value="{{ old('card_message') }}"></textarea>
@@ -117,6 +122,7 @@
                     <span class="text-red-500">{{ $message }}</span>
                     @enderror
                 </div>
+
                 <div class="input-container">
                     <h3>Способ оплаты</h3>
                     <select class="custom-select" name="payment_method">
@@ -128,16 +134,45 @@
                     <span class="text-red-500">{{ $message }}</span>
                     @enderror
                 </div>
-                <!--
-                <h3>Что бы следить за вашим заказом и не заполнять все это повторно, нажмите кноку ниже</h3>
-                <button type="submit" class="order-button">Зарегестрироваться и оформить заказ</button>
-                -->
-                <button type="submit" class="order-button">Оформить заказ</button>
+
+                <button type="button" class="order-button" id="send-code-button">Отправить код</button>
+                <button type="button" class="order-button" id="resend-code-button" style="display: none;">Отправить код повторно</button>
+            </form>
+
+            <form id="verification-form" method="POST" style="display: none;">
+                @csrf
+                <div class="input-container">
+                    <h3>Введите код подтверждения</h3>
+                    <input type="text" class="custom-input @error('verification_code') border-red-500 bg-red-100 @enderror" name="verification_code" placeholder="1234">
+                    @error('verification_code')
+                    <span class="text-red-500">{{ $message }}</span>
+                    @enderror
+                </div>
+                <button type="button" class="order-button" id="verify-code-button">Подтвердить</button>
             </form>
         </div>
     </section>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Форматирование номера телефона
+            const phoneInputs = document.querySelectorAll('.phone-input');
+
+            phoneInputs.forEach(function(phoneInput) {
+                phoneInput.addEventListener('input', function() {
+                    let value = phoneInput.value.replace(/\D/g, '');
+                    if (value.length > 10) value = value.slice(0, 10);
+
+                    let formattedValue = '';
+                    if (value.length > 0) formattedValue += '(' + value.slice(0, 3);
+                    if (value.length >= 4) formattedValue += ') ' + value.slice(3, 6);
+                    if (value.length >= 7) formattedValue += '-' + value.slice(6, 8);
+                    if (value.length >= 9) formattedValue += '-' + value.slice(8, 10);
+
+                    phoneInput.value = formattedValue;
+                });
+            });
+
+            // Выборка времени доставки
             const deliveryTimesContainer = document.getElementById('delivery-times');
             const currentTime = new Date();
             const interval = 120; // Интервал в минутах (2 часа)
@@ -191,41 +226,90 @@
             if (document.getElementById('selected-time').value === 'CUSTOM') {
                 document.getElementById('custom-time-input').style.display = 'block';
             }
-        });
 
-        function setCustomTimeConstraints() {
-            const customTimeInput = document.getElementById('custom-time');
-            const currentTime = new Date();
-            const minTime = new Date(currentTime.getTime() + 2 * 60 * 60 * 1000); // Через 2 часа
+            function setCustomTimeConstraints() {
+                const customTimeInput = document.getElementById('custom-time');
+                const currentTime = new Date();
+                const minTime = new Date(currentTime.getTime() + 2 * 60 * 60 * 1000); // Через 2 часа
 
-            // Форматируем дату и время для атрибута min
-            const year = minTime.getFullYear();
-            const month = String(minTime.getMonth() + 1).padStart(2, '0');
-            const day = String(minTime.getDate()).padStart(2, '0');
-            const hours = String(minTime.getHours()).padStart(2, '0');
-            const minutes = String(minTime.getMinutes()).padStart(2, '0');
+                // Форматируем дату и время для атрибута min
+                const year = minTime.getFullYear();
+                const month = String(minTime.getMonth() + 1).padStart(2, '0');
+                const day = String(minTime.getDate()).padStart(2, '0');
+                const hours = String(minTime.getHours()).padStart(2, '0');
+                const minutes = String(minTime.getMinutes()).padStart(2, '0');
 
-            const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
-            customTimeInput.min = minDateTime;
-        }
+                const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+                customTimeInput.min = minDateTime;
+            }
 
-        // Обработка номера телефона
-        document.addEventListener('DOMContentLoaded', function() {
-            const phoneInputs = document.querySelectorAll('.phone-input');
+            // Обработка отправки и проверки кода
+            const sendCodeButton = document.getElementById('send-code-button');
+            const resendCodeButton = document.getElementById('resend-code-button');
+            const verificationForm = document.getElementById('verification-form');
+            const orderForm = document.getElementById('order-form');
+            const verifyCodeButton = document.getElementById('verify-code-button');
 
-            phoneInputs.forEach(function(phoneInput) {
-                phoneInput.addEventListener('input', function() {
-                    let value = phoneInput.value.replace(/\D/g, '');
-                    if (value.length > 10) value = value.slice(0, 10);
+            sendCodeButton.addEventListener('click', function() {
+                sendVerificationCode();
+            });
 
-                    let formattedValue = '';
-                    if (value.length > 0) formattedValue += '(' + value.slice(0, 3);
-                    if (value.length >= 4) formattedValue += ') ' + value.slice(3, 6);
-                    if (value.length >= 7) formattedValue += '-' + value.slice(6, 8);
-                    if (value.length >= 9) formattedValue += '-' + value.slice(8, 10);
+            resendCodeButton.addEventListener('click', function() {
+                sendVerificationCode();
+            });
 
-                    phoneInput.value = formattedValue;
-                });
+            function sendVerificationCode() {
+                const formData = new FormData(orderForm);
+                fetch('{{ route('send.verification.code') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message) {
+                            alert(data.message);
+                            orderForm.style.display = 'none';
+                            verificationForm.style.display = 'block';
+                            sendCodeButton.style.display = 'none';
+                            resendCodeButton.style.display = 'block';
+                        } else if (data.errors) {
+                            alert('Ошибка: ' + data.errors.join(', '));
+                        }
+                    })
+                    .catch(error => console.error('Ошибка:', error));
+            }
+
+            verifyCodeButton.addEventListener('click', function() {
+                const formData = new FormData(verificationForm);
+                formData.append('user_phone', document.querySelector('[name="user_phone"]').value);
+                formData.append('recipient_phone', document.querySelector('[name="recipient_phone"]').value);
+                formData.append('address', document.querySelector('[name="address"]').value);
+                formData.append('selected_time', document.querySelector('[name="selected_time"]').value);
+                formData.append('custom_time', document.querySelector('[name="custom_time"]').value);
+                formData.append('card_message', document.querySelector('[name="card_message"]').value);
+                formData.append('payment_method', document.querySelector('[name="payment_method"]').value);
+                fetch('{{ route('verify.code') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message) {
+                            alert(data.message);
+                            if (data.message.includes('успешно')) {
+                                window.location.href = '{{ url('/') }}';
+                            }
+                        } else if (data.errors) {
+                            alert('Ошибка: ' + data.errors.join(', '));
+                        }
+                    })
+                    .catch(error => console.error('Ошибка:', error));
             });
         });
     </script>
