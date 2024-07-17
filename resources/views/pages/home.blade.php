@@ -7,8 +7,20 @@
         <div class="active-orders">
             @if( isset($activeOrders) )
                 @php
-                    echo count($activeOrders);
+                    //dd($activeOrders->first());
+                    $order = $activeOrders->first();
                 @endphp
+
+                <div>
+                    <p>Номер заказа.{{ $order->id }}</p>
+                    <h2>{{ $order->status == 'not-pay' ? 'Not paid' : 'Paid' }}</h2>
+                </div>
+                <div class="status-bar">
+                    <div class="{{ $order->status == 'not-pay' ? 'loading' : 'completed' }}"></div>
+                    <div class="{{ $order->status == 'payed' ? 'completed' : '' }}"></div>
+                    <div></div>
+                    <div></div>
+                </div>
             @endif
         </div>
         <div class="filters">

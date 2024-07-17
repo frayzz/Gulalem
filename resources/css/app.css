@@ -586,6 +586,53 @@ footer p {
     flex: 1;
 }
 
+/* Active Orders  */
+.active-orders {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 20px 0 20px;
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    font-family: Arial, sans-serif;
+}
+.active-orders h2 {
+    margin: 0;
+    font-size: 1.2em;
+    color: #333;
+}
+.status-bar {
+    display: flex;
+    align-items: center;
+}
+.status-bar div {
+    width: 40px;
+    height: 5px;
+    margin-right: 5px;
+    background-color: #ddd;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+}
+.status-bar .loading {
+    background-color: #007BA1;
+    animation: load 2s infinite;
+}
+.status-bar .completed {
+    background-color: #ff6a00;
+}
+@keyframes load {
+    0% {
+        width: 0;
+    }
+    100% {
+        width: 100%;
+    }
+}
+
+
 /* Order END */
 /* Auth START */
 .auth-section {

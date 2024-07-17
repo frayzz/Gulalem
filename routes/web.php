@@ -13,6 +13,7 @@ Route::get('/{id}/detail', [IndexController::class, 'show'])->name('public.show'
 // Order
 Route::get('/{id}/order', [OrderController::class, 'index'])->name('order.index');
 Route::post('/submit-order', [OrderController::class, 'store'])->name('submit.order');
+
 // SMS Mobizon Verif
 Route::post('/send-verification-code', [OrderController::class, 'sendVerificationCode'])->name('send.verification.code');
 Route::post('/verify-code', [OrderController::class, 'verifyCode'])->name('verify.code');

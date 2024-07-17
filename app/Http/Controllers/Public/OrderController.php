@@ -10,7 +10,9 @@ use App\Models\User;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 
 class OrderController extends Controller
@@ -103,9 +105,24 @@ class OrderController extends Controller
             'payment_method' => 'required|string',
         ]);
 
+        // Преобразование номера телефона в формат без символов
         $phone = preg_replace('/\D/', '', $request->user_phone);
         if (strlen($phone) == 10) {
             $phone = '7' . $phone;
+        }
+
+        // Ключи для кеша попыток верификации и блокировки
+        $attemptsKey = 'verification_attempts_' . $phone;
+        $blockedKey = 'verification_blocked_' . $phone;
+
+        // Увеличение количества попыток
+        $attempts = Cache::get($attemptsKey, 0) + 1;
+        Cache::put($attemptsKey, $attempts, now()->addMinutes(10)); // Хранение количества попыток в течение 10 минут
+
+        // Если количество попыток превышает лимит, блокируем номер на 10 минут
+        if ($attempts > 5) {
+            Cache::put($blockedKey, true, now()->addMinutes(10)); // Блокировка на 10 минут
+            return response()->json(['message' => 'Превышено количество попыток. Попробуйте позже.'], 429);
         }
 
         $verification = PhoneVerification::where('phone', $phone)
@@ -128,7 +145,7 @@ class OrderController extends Controller
             // Удаление записи верификации после успешной проверки
             $verification->delete();
 
-            return response()->json(['message' => 'Заказ успешно оформлен и номер телефона подтвержден.'], 200);
+            return response()->json(['message' => 'Заказ успешно оформлен!'], 200);
         } else {
             return response()->json(['message' => 'Неверный код подтверждения или код истек.'], 400);
         }
@@ -166,7 +183,7 @@ class OrderController extends Controller
             $this->createOrder($request, Auth::user()->phone);
             return redirect()->back()->with('success', 'Заказ успешно оформлен!');
         } else {
-            return redirect()->route('send.verification.code', $request->only('user_phone', 'recipient_phone', 'address', 'selected_time', 'custom_time', 'card_message', 'payment_method'));
+            return $this->sendVerificationCode($request);
         }
     }
 }

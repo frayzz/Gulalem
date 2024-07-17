@@ -1,6 +1,33 @@
 @extends('layouts.app')
 
 @section('content')
+    <div id="success-message" class="fixed inset-0 bg-white flex items-center justify-center z-50" style="display: none;">
+        <div class="text-center">
+            <svg class="w-16 h-16 text-green-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <p class="mt-4 text-lg font-semibold" id="success-text">Заказ успешно оформлен!</p>
+            <p class="text-lg font-semibold">Мы сейчас перенаправим вас в главное меню</p>
+        </div>
+    </div>
+    @if(session('success'))
+        <div id="success-message" class="fixed inset-0 bg-white flex items-center justify-center z-50">
+            <div class="text-center">
+                <svg class="w-16 h-16 text-green-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <p class="mt-4 text-lg font-semibold">{{ session('success') }}</p>
+                <p class="text-lg font-semibold">Мы сейчас перенаправим вас в главное меню</p>
+            </div>
+        </div>
+        <script>
+            setTimeout(() => {
+                document.getElementById('success-message').style.display = 'none';
+                window.location.href = '{{ url('/') }}';
+            }, 5000); // Перенаправление через 5 секунд
+        </script>
+    @endif
+
     <section>
         <div class="order">
             <div class="order-header">
@@ -8,23 +35,16 @@
                 <p>После отправки формы, вам перезвонит оператор и примет у вас оплату</p>
             </div>
 
-            @if(session('success'))
-                <div id="success-message" class="fixed inset-0 bg-white flex items-center justify-center z-50">
-                    <div class="text-center">
-                        <svg class="w-16 h-16 text-green-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        <p class="mt-4 text-lg font-semibold">Заказ успешно оформлен!</p>
-                        <p class="text-lg font-semibold">Мы сейчас перенаправим вас в главное меню</p>
-                    </div>
-                </div>
-                <script>
-                    setTimeout(() => {
-                        document.getElementById('success-message').style.display = 'none';
-                        window.location.href = '{{ url('/') }}';
-                    }, 5000); // Перенаправление через 5 секунд
-                </script>
-            @endif
+            <form method="POST" class="post-red post-container menu-containers" action="{{ route('logout') }}">
+                @csrf
+                <img src="{{ url('images/logout.webp') }}" alt="" class="menu-icons">
+
+                <a href="{{ route('logout') }}" slot="full-post-link" class="absolute-link" target="_self"
+                   onclick="event.preventDefault();
+                                                this.closest('form').submit();">exit</a>
+            </form>
+
+
 
             <div class="product-container flex items-start">
                 @if($product->images->isNotEmpty())
@@ -50,13 +70,13 @@
                 </div>
             </div>
 
-            <form id="order-form" method="POST">
+            <form id="order-form" method="POST" action="{{ route('submit.order') }}">
                 @csrf
                 <div class="input-container">
                     <h3>Ваш номер телефона</h3>
                     <div class="phone-input-wrapper">
                         <span class="phone-prefix">+7</span>
-                        <input type="text" class="custom-input phone-input @error('user_phone') border-red-500 bg-red-100 @enderror" name="user_phone" placeholder="(777) 445-45-75" value="{{ old('user_phone') }}">
+                        <input type="text" class="custom-input phone-input @error('user_phone') border-red-500 bg-red-100 @enderror" name="user_phone" placeholder="(777) 445-45-75" value="{{ old('user_phone', Auth::user()->phone ?? '') }}" {{ Auth::check() ? 'readonly' : '' }}>
                         @error('user_phone')
                         <span class="text-red-500">{{ $message }}</span>
                         @enderror
@@ -135,8 +155,12 @@
                     @enderror
                 </div>
 
-                <button type="button" class="order-button" id="send-code-button">Отправить код</button>
-                <button type="button" class="order-button" id="resend-code-button" style="display: none;">Отправить код повторно</button>
+                @if(Auth::check())
+                    <button type="submit" class="order-button">Оформить заказ</button>
+                @else
+                    <button type="button" class="order-button" id="send-code-button">Отправить код</button>
+                    <button type="button" class="order-button" id="resend-code-button" style="display: none;">Отправить код повторно</button>
+                @endif
             </form>
 
             <form id="verification-form" method="POST" style="display: none;">
@@ -300,17 +324,19 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        if (data.message) {
-                            alert(data.message);
-                            if (data.message.includes('успешно')) {
+                        if (data.message && data.message.includes('успешно')) {
+                            document.getElementById('success-text').innerText = data.message;
+                            document.getElementById('success-message').style.display = 'flex';
+                            setTimeout(() => {
                                 window.location.href = '{{ url('/') }}';
-                            }
+                            }, 5000); // Перенаправление через 5 секунд
                         } else if (data.errors) {
                             alert('Ошибка: ' + data.errors.join(', '));
                         }
                     })
                     .catch(error => console.error('Ошибка:', error));
             });
+
         });
     </script>
 @endsection
