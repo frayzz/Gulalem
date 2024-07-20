@@ -163,7 +163,7 @@
                 @endif
             </form>
 
-            <form id="verification-form" method="POST" style="display: none;">
+            <form id="verification-form" method="POST" action="{{ route('verify.code') }}" style="display: none;">
                 @csrf
                 <div class="input-container">
                     <h3>Введите код подтверждения</h3>
