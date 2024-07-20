@@ -588,50 +588,68 @@ footer p {
 
 /* Active Orders  */
 .active-orders {
+    margin-top: 10px;
+    padding: 15px;
+    border-radius: 15px;
+    background-color: white;
+}
+
+.loading-container {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    margin: 10px 20px 0 20px;
-    padding: 10px 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #fff;
-    font-family: Arial, sans-serif;
+    width: 100%;
+    margin-top: 10px;
+    height: 10px;
+    border-radius: 10px;
 }
-.active-orders h2 {
-    margin: 0;
-    font-size: 1.2em;
-    color: #333;
-}
-.status-bar {
-    display: flex;
-    align-items: center;
-}
-.status-bar div {
-    width: 40px;
-    height: 5px;
-    margin-right: 5px;
-    background-color: #ddd;
-    border-radius: 2px;
+
+.stage {
+    width: 24%;
+    height: 100%;
+    border-radius: 10px;
     position: relative;
     overflow: hidden;
 }
-.status-bar .loading {
+
+.stage.completed {
     background-color: #007BA1;
-    animation: load 2s infinite;
 }
-.status-bar .completed {
-    background-color: #ff6a00;
+
+.stage.loading {
+    background-color: #e5e5e5;
 }
-@keyframes load {
-    0% {
-        width: 0;
+
+.stage.loading::before {
+    content: '';
+    height: 100%;
+    background-color: #007BA1;
+    position: absolute;
+    border-radius: 10px;
+    animation: loadingAnimation 4s infinite;
+}
+
+.stage.not-started {
+    background-color: #e5e5e5;
+}
+
+@keyframes loadingAnimation {
+    0%, 100% {
+        left: 0;
+        width: 30%;
     }
-    100% {
+    25% {
+        left: 0;
+        width: 100%;
+    }
+    50% {
+        left: calc(100% - 30%);
+        width: 30%;
+    }
+    75% {
+        left: 0;
         width: 100%;
     }
 }
-
 
 /* Order END */
 /* Auth START */

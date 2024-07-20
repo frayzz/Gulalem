@@ -4,25 +4,26 @@
 
 @section('content')
     <section>
-        <div class="active-orders">
-            @if( isset($activeOrders) )
-                @php
-                    //dd($activeOrders->first());
-                    $order = $activeOrders->first();
-                @endphp
-
-                <div>
-                    <p>Номер заказа.{{ $order->id }}</p>
-                    <h2>{{ $order->status == 'not-pay' ? 'Not paid' : 'Paid' }}</h2>
-                </div>
-                <div class="status-bar">
-                    <div class="{{ $order->status == 'not-pay' ? 'loading' : 'completed' }}"></div>
-                    <div class="{{ $order->status == 'payed' ? 'completed' : '' }}"></div>
-                    <div></div>
-                    <div></div>
+        @if( isset($activeOrders) )
+            @php
+                //dd($activeOrders->first());
+                $order = $activeOrders->last();
+            @endphp
+            @if ($order->status != 'end')
+                <div class="active-orders">
+                    <div>
+                        <p>Номер заказа.{{ $order->id }}</p>
+                        <h2>{{ __('status.'.$order->status) }}</h2>
+                    </div>
+                    <div class="loading-container">
+                        <div class="stage {{ $order->status == 'not-pay' ? 'loading' : 'completed' }}"></div>
+                        <div class="stage {{ $order->status == 'awaiting-packing' ? 'loading' : ($order->status == 'not-pay' ? 'not-started' : 'completed') }}"></div>
+                        <div class="stage {{ $order->status == 'packing' ? 'loading' : ($order->status == 'delivery' ? 'completed' : 'not-started') }}"></div>
+                        <div class="stage {{ $order->status == 'delivery' ? 'loading' : 'not-started' }}"></div>
+                    </div>
                 </div>
             @endif
-        </div>
+        @endif
         <div class="filters">
             <form method="GET" action="{{ route('public.index') }}">
                     <select class="custom-select" name="sort" onchange="this.form.submit()">
