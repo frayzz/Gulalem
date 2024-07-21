@@ -155,6 +155,8 @@
                     @enderror
                 </div>
 
+                <input type="hidden" name="product_id" value="{{ $product->id }}">
+
                 @if(Auth::check())
                     <button type="submit" class="order-button">Оформить заказ</button>
                 @else
@@ -315,6 +317,7 @@
                 formData.append('custom_time', document.querySelector('[name="custom_time"]').value);
                 formData.append('card_message', document.querySelector('[name="card_message"]').value);
                 formData.append('payment_method', document.querySelector('[name="payment_method"]').value);
+                formData.append('product_id', document.querySelector('[name="product_id"]').value);
                 fetch('{{ route('verify.code') }}', {
                     method: 'POST',
                     headers: {

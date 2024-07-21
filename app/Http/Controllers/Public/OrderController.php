@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 
 class OrderController extends Controller
@@ -43,7 +42,6 @@ class OrderController extends Controller
             $phone = '7' . $phone;
         }
 
-        // Проверка на частоту отправки кодов
         $recentAttempt = PhoneVerification::where('phone', $phone)
             ->where('created_at', '>', Carbon::now()->subMinutes(10))
             ->count();
@@ -52,13 +50,11 @@ class OrderController extends Controller
             return response()->json(['message' => 'Превышено количество попыток отправки кода. Попробуйте позже.'], 429);
         }
 
-        $code = rand(1000, 9999); // Генерация случайного 4-значного кода
+        $code = rand(1000, 9999);
 
         if (app()->environment('local')) {
-            // В среде разработки сохраняем код в лог
             Log::info("Verification code for {$phone}: {$code}");
         } else {
-            // В боевой среде отправляем SMS с использованием Mobizon
             try {
                 $response = $this->mobizon->post('service/message/sendSmsMessage', [
                     'query' => [
@@ -80,7 +76,6 @@ class OrderController extends Controller
             }
         }
 
-        // Сохранение кода и телефона в базе данных
         PhoneVerification::updateOrCreate(
             ['phone' => $phone],
             [
@@ -103,6 +98,7 @@ class OrderController extends Controller
             'custom_time' => 'nullable|date',
             'card_message' => 'nullable|string',
             'payment_method' => 'required|string',
+            'product_id' => 'required|integer|exists:products,id',
         ]);
 
         // Преобразование номера телефона в формат без символов
@@ -140,7 +136,8 @@ class OrderController extends Controller
             );
             Auth::login($user);
 
-            $this->createOrder($request, $phone);
+            // Передача трех аргументов в метод createOrder
+            $this->createOrder($request, $phone, $request->product_id);
 
             // Удаление записи верификации после успешной проверки
             $verification->delete();
@@ -151,7 +148,7 @@ class OrderController extends Controller
         }
     }
 
-    private function createOrder($request, $phone)
+    private function createOrder($request, $phone, $productId)
     {
         $order = new Order();
         $order->user_phone = $phone;
@@ -163,6 +160,7 @@ class OrderController extends Controller
         $order->payment_method = $request->payment_method;
         $order->status = 'not-pay';
         $order->user_id = Auth::id();
+        $order->product_id = $productId; // Заполнение поля product_id
 
         $order->save();
     }
@@ -177,10 +175,12 @@ class OrderController extends Controller
             'custom_time' => 'nullable|date',
             'card_message' => 'nullable|string',
             'payment_method' => 'required|string',
+            'product_id' => 'required|integer|exists:products,id',
         ]);
 
         if (Auth::check()) {
-            $this->createOrder($request, Auth::user()->phone);
+            // Передача трех аргументов в метод createOrder
+            $this->createOrder($request, Auth::user()->phone, $request->product_id);
             return redirect()->back()->with('success', 'Заказ успешно оформлен!');
         } else {
             return $this->sendVerificationCode($request);
