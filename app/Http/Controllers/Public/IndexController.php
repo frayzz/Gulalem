@@ -19,7 +19,7 @@ class IndexController extends Controller
             $user = Auth::user(); // Получаем текущего авторизованного пользователя
 
             if ($user->orders()->exists()) {
-                $activeOrders = $user->orders()->select('id', 'status', 'order_details')->get();
+                $activeOrders = $user->orders()->select('id', 'status')->get();
             }
         }
 
