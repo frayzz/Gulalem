@@ -270,20 +270,31 @@
             }
 
             // Обработка отправки и проверки кода
+            
+            document.addEventListener('DOMContentLoaded', function() {
             const sendCodeButton = document.getElementById('send-code-button');
             const resendCodeButton = document.getElementById('resend-code-button');
             const verificationForm = document.getElementById('verification-form');
             const orderForm = document.getElementById('order-form');
             const verifyCodeButton = document.getElementById('verify-code-button');
-
+    
+            // Предотвращаем автоматическую отправку формы
+            orderForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+            });
+    
+            verificationForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+            });
+    
             sendCodeButton.addEventListener('click', function() {
                 sendVerificationCode();
             });
-
+    
             resendCodeButton.addEventListener('click', function() {
                 sendVerificationCode();
             });
-
+    
             function sendVerificationCode() {
                 const formData = new FormData(orderForm);
                 fetch('{{ route('send.verification.code') }}', {
@@ -293,22 +304,26 @@
                     },
                     body: formData
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.message) {
-                            alert(data.message);
-                            orderForm.style.display = 'none';
-                            verificationForm.style.display = 'block';
-                            sendCodeButton.style.display = 'none';
-                            resendCodeButton.style.display = 'block';
-                        } else if (data.errors) {
-                            alert('Ошибка: ' + data.errors.join(', '));
-                        }
-                    })
-                    .catch(error => console.error('Ошибка:', error));
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);
+                        orderForm.style.display = 'none';
+                        verificationForm.style.display = 'block';
+                        sendCodeButton.style.display = 'none';
+                        resendCodeButton.style.display = 'block';
+                    } else if (data.errors) {
+                        alert('Ошибка: ' + data.errors.join(', '));
+                    }
+                })
+                .catch(error => console.error('Ошибка:', error));
             }
-
+    
             verifyCodeButton.addEventListener('click', function() {
+                verifyCode();
+            });
+    
+            function verifyCode() {
                 const formData = new FormData(verificationForm);
                 formData.append('user_phone', document.querySelector('[name="user_phone"]').value);
                 formData.append('recipient_phone', document.querySelector('[name="recipient_phone"]').value);
@@ -325,21 +340,21 @@
                     },
                     body: formData
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.message && data.message.includes('успешно')) {
-                            document.getElementById('success-text').innerText = data.message;
-                            document.getElementById('success-message').style.display = 'flex';
-                            setTimeout(() => {
-                                window.location.href = '{{ url('/') }}';
-                            }, 5000); // Перенаправление через 5 секунд
-                        } else if (data.errors) {
-                            alert('Ошибка: ' + data.errors.join(', '));
-                        }
-                    })
-                    .catch(error => console.error('Ошибка:', error));
-            });
-
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message && data.message.includes('успешно')) {
+                        document.getElementById('success-text').innerText = data.message;
+                        document.getElementById('success-message').style.display = 'flex';
+                        setTimeout(() => {
+                            window.location.href = '{{ url('/') }}';
+                        }, 5000); // Перенаправление через 5 секунд
+                    } else if (data.errors) {
+                        alert('Ошибка: ' + data.errors.join(', '));
+                    }
+                })
+                .catch(error => console.error('Ошибка:', error));
+            }
         });
+
     </script>
 @endsection
