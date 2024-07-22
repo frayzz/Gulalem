@@ -158,7 +158,7 @@
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
 
                 @if(Auth::check())
-                    <button type="button" class="order-button">Оформить заказ</button>
+                    <button type="submit" class="order-button">Оформить заказ</button>
                 @else
                     <button type="button" class="order-button" id="send-code-button">Отправить код</button>
                     <button type="button" class="order-button" id="resend-code-button" style="display: none;">Отправить код повторно</button>
