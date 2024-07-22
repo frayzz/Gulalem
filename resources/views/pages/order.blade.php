@@ -158,14 +158,14 @@
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
 
                 @if(Auth::check())
-                    <button type="submit" class="order-button">Оформить заказ</button>
+                    <button type="button" class="order-button">Оформить заказ</button>
                 @else
                     <button type="button" class="order-button" id="send-code-button">Отправить код</button>
                     <button type="button" class="order-button" id="resend-code-button" style="display: none;">Отправить код повторно</button>
                 @endif
             </form>
 
-            <form id="verification-form" method="POST" action="{{ route('verify.code') }}" style="display: none;">
+            <form id="verification-form" method="POST" style="display: none;">
                 @csrf
                 <div class="input-container">
                     <h3>Введите код подтверждения</h3>
@@ -174,16 +174,6 @@
                     <span class="text-red-500">{{ $message }}</span>
                     @enderror
                 </div>
-
-                <input type="hidden" name="user_phone" value="">
-                <input type="hidden" name="recipient_phone" value="">
-                <input type="hidden" name="address" value="">
-                <input type="hidden" name="selected_time" value="">
-                <input type="hidden" name="custom_time" value="">
-                <input type="hidden" name="card_message" value="">
-                <input type="hidden" name="payment_method" value="">
-                <input type="hidden" name="product_id" value="">
-
                 <button type="button" class="order-button" id="verify-code-button">Подтвердить</button>
             </form>
         </div>
@@ -319,21 +309,37 @@
             }
 
             verifyCodeButton.addEventListener('click', function() {
-                copyOrderFormData();
-                verificationForm.submit();
+                const formData = new FormData(verificationForm);
+                formData.append('user_phone', document.querySelector('[name="user_phone"]').value);
+                formData.append('recipient_phone', document.querySelector('[name="recipient_phone"]').value);
+                formData.append('address', document.querySelector('[name="address"]').value);
+                formData.append('selected_time', document.querySelector('[name="selected_time"]').value);
+                formData.append('custom_time', document.querySelector('[name="custom_time"]').value);
+                formData.append('card_message', document.querySelector('[name="card_message"]').value);
+                formData.append('payment_method', document.querySelector('[name="payment_method"]').value);
+                formData.append('product_id', document.querySelector('[name="product_id"]').value);
+                fetch('{{ route('verify.code') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message && data.message.includes('успешно')) {
+                            document.getElementById('success-text').innerText = data.message;
+                            document.getElementById('success-message').style.display = 'flex';
+                            setTimeout(() => {
+                                window.location.href = '{{ url('/') }}';
+                            }, 5000); // Перенаправление через 5 секунд
+                        } else if (data.errors) {
+                            alert('Ошибка: ' + data.errors.join(', '));
+                        }
+                    })
+                    .catch(error => console.error('Ошибка:', error));
             });
 
-            function copyOrderFormData() {
-                const fields = [
-                    'user_phone', 'recipient_phone', 'address',
-                    'selected_time', 'custom_time', 'card_message',
-                    'payment_method', 'product_id'
-                ];
-
-                fields.forEach(field => {
-                    verificationForm.querySelector(`[name="${field}"]`).value = orderForm.querySelector(`[name="${field}"]`).value;
-                });
-            }
         });
     </script>
 @endsection
