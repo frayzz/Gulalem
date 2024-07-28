@@ -45,7 +45,7 @@
             @foreach($products as $product)
                 <div class="product">
                     <div class="illustration">
-                        <a href="{{ route('public.show', $product->id) }}">
+                        <a href="{{ route('public.show', ['slug' => $product->slug]) }}">
                             @if($product->images->isNotEmpty())
                                 <picture>
                                     @foreach($product->images as $image)
@@ -65,7 +65,7 @@
                         </a>
                     </div>
                     <div class="short-description">
-                        <a href="{{ route('public.show', $product->id) }}">
+                        <a href="{{ route('public.show', ['slug' => $product->slug]) }}">
                             <div class="product-name">
                                 <h4>{{ $product->name }}</h4>
                             </div>
@@ -74,7 +74,7 @@
                         <div class="price">{{ $product->price }}₸</div>
                     </div>
                     <div class="nav-buttons">
-                        <a href="{{ route('order.index', $product->id) }}">
+                        <a href="{{ route('order.index', ['slug' => $product->slug]) }}">
                             <button class="order-button">Заказать</button>
                         </a>
                     </div>

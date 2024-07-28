@@ -657,3 +657,26 @@ footer p {
     padding: 100px 15px;
 }
 /* Auth END */
+
+@media (min-width: 640px) {
+    /* Main Page START */
+    .container {
+        max-width: 100%;
+    }
+
+    .product {
+        width: 25%;
+    }
+    /* Main Page END */
+    /* Order Page START*/
+    .order {
+        margin: 0 20%;
+    }
+    /* Order Page END*/
+    /* Detail Page START */
+    .product-detail {
+        margin: 0 30%;
+        padding-bottom: 100px;
+    }
+    /* Detail Page END */
+}

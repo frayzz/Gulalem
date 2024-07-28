@@ -25,9 +25,9 @@ class OrderController extends Controller
         ]);
     }
 
-    public function index($id)
+    public function index($slug)
     {
-        $product = Product::find($id);
+        $product = Product::where('slug', $slug)->firstOrFail();;
         return view('pages.order', compact('product'));
     }
 

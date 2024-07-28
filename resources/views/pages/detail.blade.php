@@ -40,7 +40,7 @@
                 <div class="product-description">
                     <p>{{ $product->description }}</p>
                 </div>
-                <a href="{{ route('order.index', $product->id) }}">
+                <a href="{{ route('order.index', ['slug' => $product->slug]) }}">
                     <button class="detail-order-button">Заказать</button>
                 </a>
 

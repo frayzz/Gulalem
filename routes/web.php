@@ -9,9 +9,9 @@ use App\Http\Controllers\Public\OrderController;
 
 
 Route::get('/', [IndexController::class, 'index'])->name('public.index');
-Route::get('/{id}/detail', [IndexController::class, 'show'])->name('public.show');
+Route::get('/product/{slug}', [IndexController::class, 'show'])->name('public.show');
 // Order
-Route::get('/{id}/order', [OrderController::class, 'index'])->name('order.index');
+Route::get('/{slug}/order', [OrderController::class, 'index'])->name('order.index');
 Route::post('/submit-order', [OrderController::class, 'store'])->name('submit.order');
 
 // SMS Mobizon Verif

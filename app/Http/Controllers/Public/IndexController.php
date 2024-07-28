@@ -72,8 +72,8 @@ class IndexController extends Controller
         }
     }
 
-    public function show($id) {
-        $product = Product::find($id);
+    public function show($slug) {
+        $product = Product::where('slug', $slug)->firstOrFail();
         $meta = [
             'title' => $product->name,
             'description' => $product->description,
