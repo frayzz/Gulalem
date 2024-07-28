@@ -71,11 +71,12 @@
                     <div class="short-description">
                         <a href="{{ route('public.show', ['slug' => $product->slug]) }}">
                             <div class="product-name">
-                                <h4>{{ $product->name }}</h4>
+                                <h4 itemprop="name">{{ $product->name }}</h4>
                             </div>
                         </a>
 
-                        <div class="price">{{ $product->price }}₸</div>
+                        <meta itemprop="priceCurrency" content="KZT">
+                        <div class="price" itemprop="price">{{ $product->price }}₸</div>
                     </div>
                     <div class="nav-buttons">
                         <a href="{{ route('order.index', ['slug' => $product->slug]) }}">
