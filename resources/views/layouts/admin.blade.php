@@ -13,6 +13,7 @@
         <nav>
             <ul class="flex space-x-4">
                 <li><a href="{{ route('admin.products.index') }}" class="text-blue-500 hover:underline">Products</a></li>
+                <li><a href="{{ route('admin.orders.index') }}" class="text-blue-500 hover:underline">Orders</a></li>
                 <!-- Добавьте другие ссылки для управления -->
             </ul>
         </nav>

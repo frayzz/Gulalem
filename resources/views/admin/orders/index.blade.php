@@ -28,13 +28,13 @@
                     <span class="order-toggle">v</span>
                 </div>
                 <div class="order-details hidden p-4 space-y-2">
-                    <p class="font-bold">Розы фиолетовые вкусные пахнут</p>
+                    <p class="font-bold">{{ $order->product->name }}</p>
                     <hr class="border-gray-300">
                     <p>Время заказа: {{ $order->created_at }}</p>
                     <hr class="border-gray-300">
                     <p>Желаемое время доставки: {{ $order->selected_time }}</p>
                     <hr class="border-gray-300">
-                    <p>Адрес: {{ $order->address }}</p>
+                    <p>Адрес: {{ $order->city.', '.$order->region.', '.$order->address }}</p>
                     <hr class="border-gray-300">
                     <p>Надпись на открытке: {{ $order->card_message }}</p>
                     <hr class="border-gray-300">

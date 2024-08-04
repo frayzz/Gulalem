@@ -18,6 +18,8 @@ class Order extends Model
         'card_message',
         'payment_method',
         'status',
+        'city',
+        'region',
     ];
 
     public function user()

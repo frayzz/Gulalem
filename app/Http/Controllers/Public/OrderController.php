@@ -99,6 +99,8 @@ class OrderController extends Controller
             'card_message' => 'nullable|string',
             'payment_method' => 'required|string',
             'product_id' => 'required|integer|exists:products,id',
+            'city' => 'nullable|string',
+            'region' => 'nullable|string',
         ]);
 
         // Преобразование номера телефона в формат без символов
@@ -153,6 +155,8 @@ class OrderController extends Controller
         $order = new Order();
         $order->user_phone = $phone;
         $order->recipient_phone = $request->recipient_phone;
+        $order->city = $request->city;
+        $order->region = $request->region;
         $order->address = $request->address;
         $order->selected_time = $request->selected_time;
         $order->custom_time = $request->custom_time;

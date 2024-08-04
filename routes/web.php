@@ -20,7 +20,7 @@ Route::post('/verify-code', [OrderController::class, 'verifyCode'])->name('verif
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::resource('products', ProductController::class);
-    Route::get('/orders', [App\Http\Controllers\Admin\OrderController::class, 'index']);
+    Route::get('/orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
     Route::post('/orders/{order}/next-stage', [App\Http\Controllers\Admin\OrderController::class, 'moveToNextStage'])->name('orders.nextStage');
 });
 

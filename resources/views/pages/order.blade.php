@@ -101,7 +101,7 @@
                         <select name="city" class="custom-select" disabled>
                             <option value="Алматы">г. Алматы</option>
                         </select>
-                        <select class="custom-input" name="region" placeholder="Адресс доставки" value="{{ old('address') }}">
+                        <select class="custom-input" name="region" placeholder="Адресс доставки">
                             <option selected disabled hidden>Выберите район</option>
                             <option value="Алмалинский">Алмалинский р-н</option>
                             <option value="Наурызбайский">Наурызбайский р-н</option>
@@ -270,31 +270,31 @@
             }
 
             // Обработка отправки и проверки кода
-            
-        
+
+
             const sendCodeButton = document.getElementById('send-code-button');
             const resendCodeButton = document.getElementById('resend-code-button');
             const verificationForm = document.getElementById('verification-form');
             const orderForm = document.getElementById('order-form');
             const verifyCodeButton = document.getElementById('verify-code-button');
-    
+
             // Предотвращаем автоматическую отправку формы
             orderForm.addEventListener('submit', function(event) {
                 event.preventDefault();
             });
-    
+
             verificationForm.addEventListener('submit', function(event) {
                 event.preventDefault();
             });
-    
+
             sendCodeButton.addEventListener('click', function() {
                 sendVerificationCode();
             });
-    
+
             resendCodeButton.addEventListener('click', function() {
                 sendVerificationCode();
             });
-    
+
             function sendVerificationCode() {
                 const formData = new FormData(orderForm);
                 fetch('{{ route('send.verification.code') }}', {
@@ -318,15 +318,17 @@
                 })
                 .catch(error => console.error('Ошибка:', error));
             }
-    
+
             verifyCodeButton.addEventListener('click', function() {
                 verifyCode();
             });
-    
+
             function verifyCode() {
                 const formData = new FormData(verificationForm);
                 formData.append('user_phone', document.querySelector('[name="user_phone"]').value);
                 formData.append('recipient_phone', document.querySelector('[name="recipient_phone"]').value);
+                formData.append('city', document.querySelector('[name="city"]').value);
+                formData.append('region', document.querySelector('[name="region"]').value);
                 formData.append('address', document.querySelector('[name="address"]').value);
                 formData.append('selected_time', document.querySelector('[name="selected_time"]').value);
                 formData.append('custom_time', document.querySelector('[name="custom_time"]').value);
