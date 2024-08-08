@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->string('city')->nullable()->after('existing_column'); // Укажите существующий столбец, после которого нужно добавить новые столбцы
+            $table->string('city')->nullable()->after('address'); // Укажите существующий столбец, после которого нужно добавить новые столбцы
             $table->string('region')->nullable()->after('city');
         });
     }
