@@ -12,6 +12,7 @@ use Intervention\Image\Laravel\Facades\Image;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Support\Facades\Storage;
+use Spatie\ImageOptimizer\OptimizerChainFactory;
 
 class ProductController extends Controller
 {
@@ -29,6 +30,7 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        // Валидация входных данных
         $request->validate([
             'name' => 'required',
             'description' => 'nullable',
@@ -40,8 +42,10 @@ class ProductController extends Controller
             'properties.*.value' => 'nullable',
         ]);
 
+        // Создание продукта
         $product = Product::create($request->only('name', 'description', 'price', 'store_id'));
 
+        // Обработка и сохранение свойств продукта
         if ($request->has('properties')) {
             foreach ($request->properties as $property) {
                 if (!empty($property['name']) && !empty($property['value'])) {
@@ -53,9 +57,16 @@ class ProductController extends Controller
             }
         }
 
+        // Обработка и сохранение изображений
         if ($request->hasFile('images')) {
+            $optimizerChain = OptimizerChainFactory::create();
             foreach ($request->file('images') as $image) {
+                // Сохранение изображения
                 $path = $image->store('products', 'public');
+
+                // Оптимизация изображения
+                $optimizerChain->optimize(storage_path('app/public/' . $path));
+
                 $product->images()->create([
                     'image_url' => $path,
                     'format' => 'original',
@@ -64,7 +75,7 @@ class ProductController extends Controller
             }
         }
 
-
+        // Перенаправление с сообщением об успехе
         return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
     }
 
