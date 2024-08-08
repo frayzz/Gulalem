@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Gulalem - твой цветочный мир')
+@section('description', 'Gulalem - лучший интернет-магазин цветов. Заказывайте свежие букеты и цветочные композиции с доставкой по Алмате.')
 
 @section('content')
     <section>

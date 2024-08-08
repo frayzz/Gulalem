@@ -2,6 +2,18 @@
 
 @section('content')
     <h1 class="text-xl font-bold mb-4">Products</h1>
+    <div class="container">
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <form action="{{ route('admin.generate-sitemap') }}" method="get">
+            @csrf
+            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded mb-4 inline-block">Сгенерировать Sitemap</button>
+        </form>
+    </div>
     <a href="{{ route('admin.products.create') }}" class="bg-blue-500 text-white py-2 px-4 rounded mb-4 inline-block">Add Product</a>
     <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
         <thead class="bg-gray-200">

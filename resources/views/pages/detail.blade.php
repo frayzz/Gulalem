@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', $meta['title'])
-@section('description', $meta['description'])
+@section('title', '🌷Купить ' . $product->name . ' в Алмате с доставкой | Gulalem')
+@section('description', $product->description . '. Доставка по городу Алматы. Лучшие цены на ' . $product->name . ' в нашем интернет-магазине.')
 
-@section('og_title', $meta['og_title'])
-@section('og_description', $meta['og_description'])
-@section('og_image', $meta['og_image'])
+@section('og_title', '🌷Купить ' . $product->name . ' в Казахстане')
+@section('og_description', 'Лучшие цены на ' . $product->description . '. Доставка по городу Алматы.')
+@section('og_image', asset('storage/' . $product->images->first()->image_url))
 
 @section('content')
 
@@ -40,7 +40,7 @@
                 <meta itemprop="priceCurrency" content="KZT">
                 <div class="price" itemprop="price">{{ $product->price }}</div>
                 <div class="product-description" itemprop="description">
-                    <p>{{ $product->description }}</p>
+                    <p>{{ $product->description . '. Доставка по городу Алматы.' }}</p>
                 </div>
                 <a href="{{ route('order.index', ['slug' => $product->slug]) }}">
                     <button class="detail-order-button">Заказать</button>

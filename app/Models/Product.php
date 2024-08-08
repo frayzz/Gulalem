@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Cviebrock\EloquentSluggable\Sluggable;
+use Illuminate\Support\Facades\Artisan;
 
 class Product extends Model
 {
@@ -50,6 +51,17 @@ class Product extends Model
                 'source' => 'name'
             ]
         ];
+    }
+
+    protected static function booted()
+    {
+        static::created(function ($product) {
+            Artisan::call('sitemap:generate');
+        });
+
+        static::deleted(function ($product) {
+            Artisan::call('sitemap:generate');
+        });
     }
 
 }
