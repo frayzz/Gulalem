@@ -59,12 +59,12 @@
                                                 <source srcset="{{ asset('storage/' . $image->image_url) }}" type="image/{{ $image->type }}">
                                             @endif
                                         @endforeach
-                                        <img src="{{ asset('storage/' . $product->images->first()->image_url) }}" loading="lazy" alt="{{ $product->name }}" itemprop="image" class="w-24 h-24 object-cover">
+                                        <img src="{{ secure_asset('storage/' . $product->images->first()->image_url) }}" loading="lazy" alt="{{ $product->name }}" itemprop="image" class="w-24 h-24 object-cover">
                                     </picture>
                                 </div>
                             @else
                                 <div itemscope itemtype="http://schema.org/Product">
-                                    <img src="{{ asset('images/no-image.png') }}" loading="lazy" alt="No image" itemprop="image" class="w-24 h-24 object-cover">
+                                    <img src="{{ secure_asset('images/no-image.png') }}" loading="lazy" alt="No image" itemprop="image" class="w-24 h-24 object-cover">
                                 </div>
                             @endif
                         </a>

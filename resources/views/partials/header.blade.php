@@ -1,7 +1,7 @@
 <header>
     <div class="logo" data-nosnippet>
         <a href="{{ route('public.index') }}">
-            <img src="{{ asset('images/logo.svg') }}" alt="GULALEM Logo">
+            <img src="{{ secure_asset('images/logo.svg') }}" alt="GULALEM Logo">
             <span>GULALEM</span>
         </a>
     </div>
