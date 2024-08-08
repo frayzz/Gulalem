@@ -1,4 +1,4 @@
-<div class="footer-menu">
+<div class="footer-menu" data-nosnippet>
     <div class="footer-menu__item">
         <a href="#" class="footer-menu__link footer-menu__link--active">
             <img src="/path/to/news-icon.svg" alt="News Icon" class="footer-menu__icon">

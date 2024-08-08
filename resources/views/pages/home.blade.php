@@ -25,7 +25,7 @@
                 </div>
             @endif
         @endif
-        <div class="filters">
+        <div class="filters" data-nosnippet>
             <form method="GET" action="{{ route('public.index') }}">
                     <select class="custom-select" name="sort" onchange="this.form.submit()">
                         <option value="new" {{ request('sort') == 'new' ? 'selected' : '' }}>Новинки</option>
