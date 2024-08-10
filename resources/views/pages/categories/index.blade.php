@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Категории')
-@section('description', 'Просмотр всех категорий')
+@section('title', 'Категории цветов Gulalem. Заказать с доставкой по Алмате')
+@section('description', 'Просмотр всех категорий цветов для любого повода, что бы обрадовать своих любимых')
 
 @section('content')
     <section class="categories-section">
