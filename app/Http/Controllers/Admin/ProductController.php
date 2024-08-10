@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductProperty;
@@ -25,7 +26,8 @@ class ProductController extends Controller
     public function create()
     {
         $stores = Store::all();
-        return view('admin.products.create', compact('stores'));
+        $categories = Category::all();
+        return view('admin.products.create', compact('stores', 'categories'));
     }
 
     public function store(Request $request)
@@ -36,6 +38,7 @@ class ProductController extends Controller
             'description' => 'nullable',
             'price' => 'required|numeric',
             'store_id' => 'required|exists:stores,id',
+            'category_id' => 'required|exists:categories,id',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'properties' => 'array',
             'properties.*.name' => 'nullable',
@@ -43,7 +46,7 @@ class ProductController extends Controller
         ]);
 
         // Создание продукта
-        $product = Product::create($request->only('name', 'description', 'price', 'store_id'));
+        $product = Product::create($request->only('name', 'description', 'price', 'store_id', 'category_id'));
 
         // Обработка и сохранение свойств продукта
         if ($request->has('properties')) {
@@ -87,7 +90,8 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $stores = Store::all();
-        return view('admin.products.edit', compact('product', 'stores'));
+        $categories = Category::all();
+        return view('admin.products.edit', compact('product', 'stores', 'categories'));
     }
 
     public function update(Request $request, Product $product)
@@ -97,13 +101,14 @@ class ProductController extends Controller
             'description' => 'nullable',
             'price' => 'required|numeric',
             'store_id' => 'required|exists:stores,id',
+            'category_id' => 'required|exists:categories,id',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'properties' => 'array',
             'properties.*.name' => 'required_with:properties.*.value',
             'properties.*.value' => 'required_with:properties.*.name',
         ]);
 
-        $product->update($request->only('name', 'description', 'price', 'store_id'));
+        $product->update($request->only('name', 'description', 'price', 'store_id', 'category_id'));
 
         $product->properties()->delete();
         if ($request->has('properties')) {

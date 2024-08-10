@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
 use App\Models\Product;
+use App\Models\Category;
 
 class SitemapController extends Controller
 {
@@ -15,6 +16,15 @@ class SitemapController extends Controller
 
         // Добавьте URL главной страницы
         $sitemap->add(Url::create('/'));
+
+        // Добавьте URL для страницы со списком всех категорий
+        $sitemap->add(Url::create('/categories'));
+
+        // Добавьте URL для всех категорий
+        $categories = Category::all();
+        foreach ($categories as $category) {
+            $sitemap->add(Url::create("/categories/{$category->slug}"));
+        }
 
         // Добавьте URL для всех продуктов
         $products = Product::all();
@@ -28,3 +38,4 @@ class SitemapController extends Controller
         return redirect()->back()->with('success', 'Sitemap generated successfully.');
     }
 }
+

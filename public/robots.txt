@@ -5,3 +5,7 @@ Disallow: /register
 Disallow: /forgot-password
 Disallow: /admin/orders
 Disallow: /admin/products
+Disallow: /forgot-password
+Disallow: /logout
+Disallow: /send-verification-code
+Disallow: /verify-code

@@ -25,6 +25,16 @@
             </select>
         </div>
         <div>
+            <label for="category_id" class="block text-sm font-medium text-gray-700">Category</label>
+            <select name="category_id" id="category_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                <option value="" selected disabled hidden>Select Category</option>
+                @foreach($categories as $category)
+                    <option value="{{ $category->id }}" {{ old('category_id', $product->category_id ?? '') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div>
             <label for="images" class="block text-sm font-medium text-gray-700">Images</label>
             <input type="file" name="images[]" id="images" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" multiple>
         </div>

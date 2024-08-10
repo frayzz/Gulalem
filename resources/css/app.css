@@ -689,6 +689,73 @@ footer p {
 }
 
 /* Order END */
+
+/* Categories START */
+.category-header {
+    padding: 20px;
+}
+.categories-section {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.categories-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.category-item {
+    margin-bottom: 15px;
+}
+
+.category-name {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2c3e50;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    display: block;
+    padding: 10px;
+    background-color: #e9ecef;
+    border-radius: 5px;
+}
+
+.category-name:hover {
+    color: #3498db;
+    background-color: #dee2e6;
+}
+
+.subcategories-list {
+    list-style-type: none;
+    padding-left: 20px;
+    margin-top: 10px;
+}
+
+.subcategory-item {
+    margin-bottom: 8px;
+}
+
+.subcategory-name {
+    font-size: 16px;
+    color: #495057;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    display: block;
+    padding: 5px;
+    background-color: #f1f3f5;
+    border-radius: 5px;
+}
+
+.subcategory-name:hover {
+    color: #3498db;
+    background-color: #e2e6ea;
+}
+
+
+/* Categories END */
+
 /* Auth START */
 .auth-section {
     padding: 100px 15px;

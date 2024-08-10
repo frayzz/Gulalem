@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
@@ -11,6 +12,10 @@ use App\Http\Controllers\Public\OrderController;
 
 Route::get('/', [IndexController::class, 'index'])->name('public.index');
 Route::get('/product/{slug}', [IndexController::class, 'show'])->name('public.show');
+
+// Categories
+Route::get('/categories', [App\Http\Controllers\Public\CategoryController::class, 'index'])->name('categories.index');
+Route::get('/categories/{slug}', [App\Http\Controllers\Public\CategoryController::class, 'show'])->name('categories.show');
 // Order
 Route::get('/order/{slug}/', [OrderController::class, 'index'])->name('order.index');
 Route::post('/submit-order', [OrderController::class, 'store'])->name('submit.order');
@@ -25,6 +30,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('/orders/{order}/next-stage', [App\Http\Controllers\Admin\OrderController::class, 'moveToNextStage'])->name('orders.nextStage');
 
     Route::get('/generate-sitemap', [SitemapController::class, 'generate'])->name('generate-sitemap');
+
+    Route::resource('categories', CategoryController::class)->except(['show']);
 });
 
 

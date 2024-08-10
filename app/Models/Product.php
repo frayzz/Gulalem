@@ -12,7 +12,7 @@ class Product extends Model
     use HasFactory;
     use Sluggable;
 
-    protected $fillable = ['name', 'description', 'price', 'store_id', 'slug'];
+    protected $fillable = ['name', 'description', 'price', 'store_id', 'category_id', 'slug'];
 
     public function store()
     {
@@ -51,6 +51,11 @@ class Product extends Model
                 'source' => 'name'
             ]
         ];
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 
     protected static function booted()
