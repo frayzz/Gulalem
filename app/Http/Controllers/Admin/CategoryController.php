@@ -29,7 +29,7 @@ class CategoryController extends Controller
         ]);
 
         // Создание категории с автоматической генерацией слага
-        Category::create($request->only('name', 'description'));
+        Category::create($request->only('name', 'description', 'parent_id'));
 
         return redirect()->route('admin.categories.index')->with('success', 'Category created successfully.');
     }
@@ -48,7 +48,7 @@ class CategoryController extends Controller
             'parent_id' => 'nullable|exists:categories,id',
         ]);
 
-        $category->update($request->only('name', 'description'));
+        $category->update($request->only('name', 'description', 'parent_id'));
 
         return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully.');
     }
