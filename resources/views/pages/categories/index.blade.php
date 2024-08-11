@@ -3,6 +3,9 @@
 @section('title', 'Категории цветов Gulalem. Заказать с доставкой по Алмате')
 @section('description', 'Просмотр всех категорий цветов для любого повода, что бы обрадовать своих любимых')
 
+@section('og_title', 'Категории цветов Gulalem. Заказать с доставкой по Алмате')
+@section('og_description', 'Просмотр всех категорий цветов для любого повода, что бы обрадовать своих любимых')
+
 @section('content')
     <section class="categories-section">
         <h1 class="text-2xl font-bold mb-6">Категории</h1>

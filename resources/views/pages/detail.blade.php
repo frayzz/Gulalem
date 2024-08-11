@@ -3,7 +3,7 @@
 @section('title', '🌷Купить ' . $product->name . ' в Алмате с доставкой | Gulalem')
 @section('description', $product->description . '. Доставка по городу Алматы. Лучшие цены на ' . $product->name . ' в нашем интернет-магазине.')
 
-@section('og_title', '🌷Купить ' . $product->name . ' в Казахстане')
+@section('og_title', '🌷Купить ' . $product->name . ' в Алматы')
 @section('og_description', 'Лучшие цены на ' . $product->description . '. Доставка по городу Алматы.')
 @section('og_image', secure_asset('storage/' . $product->images->first()->image_url))
 
