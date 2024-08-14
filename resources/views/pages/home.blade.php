@@ -68,21 +68,20 @@
                                             <source srcset="{{ asset('storage/' . $image->image_url) }}" type="image/{{ $image->type }}">
                                         @endif
                                     @endforeach
-                                    <img src="{{ secure_asset('storage/' . $product->images->first()->image_url) }}" loading="lazy" alt="{{ $product->name }}" itemprop="image" class="w-24 h-24 object-cover">
+                                    <img src="{{ secure_asset('storage/' . $product->images->first()->image_url) }}" loading="lazy" alt="{{ $product->name }}" class="w-24 h-24 object-cover">
                                 </picture>
                             @else
-                                <img src="{{ secure_asset('images/no-image.png') }}" loading="lazy" alt="No image" itemprop="image" class="w-24 h-24 object-cover">
+                                <img src="{{ secure_asset('images/no-image.png') }}" loading="lazy" alt="No image" class="w-24 h-24 object-cover">
                             @endif
                         </a>
                     </div>
                     <div class="short-description">
                         <a href="{{ route('public.show', ['slug' => $product->slug]) }}">
                             <div class="product-name">
-                                <h4 itemprop="name">{{ $product->name }}</h4>
+                                <h4>{{ $product->name }}</h4>
                             </div>
                         </a>
-                        <meta itemprop="priceCurrency" content="KZT">
-                        <div class="price" itemprop="price">{{ $product->price }}₸</div>
+                        <div class="price">{{ $product->price }}₸</div>
                     </div>
                     <div class="nav-buttons">
                         <a href="{{ route('order.index', ['slug' => $product->slug]) }}">

@@ -51,15 +51,14 @@
             </div>
             <div class="detail-short-description">
                 <div class="product-name">
-                    <h1 itemprop="name">{{ $product->name }}</h1>
+                    <h1>{{ $product->name }}</h1>
                 </div>
                 <div class="available-tag">
                     <span>новинка</span>
                 </div>
 
-                <meta itemprop="priceCurrency" content="KZT">
-                <div class="price" itemprop="price">{{ $product->price }}</div>
-                <div class="product-description" itemprop="description">
+                <div class="price">{{ $product->price }}</div>
+                <div class="product-description">
                     <p>{{ $product->description . '. Доставка по городу Алматы.' }}</p>
                 </div>
                 <a href="{{ route('order.index', ['slug' => $product->slug]) }}">
