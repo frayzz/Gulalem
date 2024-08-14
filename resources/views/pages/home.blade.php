@@ -11,8 +11,42 @@
           "name": "Gulalem",
           "description": "Лучший интернет-магазин цветов. Заказывайте свежие букеты и цветочные композиции с доставкой по Алмате.",
           "image": "{{ secure_asset('images/favicon.ico') }}",
-          "url": "{{ url('/') }}"
-        }
+          "url": "{{ url('/') }}",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Алматы",
+            "addressRegion": "KZ",
+            "streetAddress": "Толе би",
+            "postalCode": "050000",
+            "addressCountry": "KZ"
+          }
+}
+    </script>
+
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "itemListElement": [
+        @foreach($products as $index => $product)
+            {
+              "@type": "Product",
+              "position": {{ $index + 1 }},
+              "name": "{{ $product->name }}",
+              "image": "{{ secure_asset('storage/' . $product->images->first()->image_url) }}",
+              "description": "{{ $product->description }}",
+              "offers": {
+                "@type": "Offer",
+                "url": "{{ route('public.show', ['slug' => $product->slug]) }}",
+                "priceCurrency": "KZT",
+                "price": "{{ $product->price }}",
+                "availability": "https://schema.org/InStock",
+                "itemCondition": "https://schema.org/NewCondition"
+              }
+            }@if(!$loop->last),@endif
+        @endforeach
+        ]
+      }
     </script>
 @endsection
 

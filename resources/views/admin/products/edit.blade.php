@@ -2,6 +2,15 @@
 
 @section('content')
     <h1 class="text-xl font-bold mb-4">Edit Product</h1>
+    @if ($errors->any())
+        <div class="text-red-500 text-sm mt-1">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
         @csrf
         @method('PUT')
@@ -22,6 +31,15 @@
             <select name="store_id" id="store_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
                 @foreach($stores as $store)
                     <option value="{{ $store->id }}" @if($product->store_id == $store->id) selected @endif>{{ $store->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div>
+            <label for="category_id" class="block text-sm font-medium text-gray-700">Category</label>
+            <select name="category_id" id="category_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                <option value="" selected disabled hidden>Select Category</option>
+                @foreach($categories as $category)
+                    <option value="{{ $category->id }}" {{ old('category_id', $product->category_id ?? '') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                 @endforeach
             </select>
         </div>

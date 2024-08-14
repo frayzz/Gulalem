@@ -2,6 +2,15 @@
 
 @section('content')
     <h1 class="text-xl font-bold mb-4">Edit Category</h1>
+    @if ($errors->any())
+        <div class="text-red-500 text-sm mt-1">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <form action="{{ route('admin.categories.update', $category) }}" method="POST" class="space-y-4">
         @csrf
         @method('PUT')

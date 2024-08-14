@@ -17,7 +17,7 @@
       "description": "{{ $product->description }}",
       "offers": {
         "@type": "Offer",
-        "url": "{{ route('order.index', ['slug' => $product->slug]) }}",
+        "url": "{{ url()->current() }}",
         "priceCurrency": "KZT",
         "price": "{{ $product->price }}",
         "itemCondition": "https://schema.org/NewCondition",
