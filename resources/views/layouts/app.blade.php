@@ -7,6 +7,9 @@
     <!-- Включение метатегов -->
     @include('partials.meta')
 
+    <!-- Место для вставки JSON-LD -->
+    @yield('structured_data', '<!-- No structured data provided -->')
+
     <!-- Канонический тег -->
     <link rel="canonical" href="{{ url()->current() }}">
 

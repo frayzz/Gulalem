@@ -7,6 +7,26 @@
 @section('og_description', 'Лучшие цены на ' . $product->description . '. Доставка по городу Алматы.')
 @section('og_image', secure_asset('storage/' . $product->images->first()->image_url))
 
+@section('structured_data')
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Product",
+          "name": "{{ $product->name }}",
+      "image": "{{ secure_asset('storage/' . $product->images->first()->image_url) }}",
+      "description": "{{ $product->description }}",
+      "offers": {
+        "@type": "Offer",
+        "url": "{{ route('order.index', ['slug' => $product->slug]) }}",
+        "priceCurrency": "KZT",
+        "price": "{{ $product->price }}",
+        "itemCondition": "https://schema.org/NewCondition",
+        "availability": "https://schema.org/InStock"
+      }
+    }
+    </script>
+@endsection
+
 @section('content')
 
     <section>

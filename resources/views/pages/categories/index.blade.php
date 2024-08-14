@@ -1,10 +1,31 @@
 @extends('layouts.app')
 
 @section('title', 'Категории цветов Gulalem. Заказать с доставкой по Алмате')
-@section('description', 'Просмотр всех категорий цветов для любого повода, что бы обрадовать своих любимых')
+@section('description', 'Просмотр всех категорий цветов для любого повода, чтобы обрадовать своих любимых')
 
 @section('og_title', 'Категории цветов Gulalem. Заказать с доставкой по Алмате')
-@section('og_description', 'Просмотр всех категорий цветов для любого повода, что бы обрадовать своих любимых')
+@section('og_description', 'Просмотр всех категорий цветов для любого повода, чтобы обрадовать своих любимых')
+
+@section('structured_data')
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "Категории цветов",
+          "description": "Просмотр всех категорий цветов для любого повода, чтобы обрадовать своих любимых",
+          "itemListElement": [
+        @foreach($categories->where('parent_id', null) as $index => $parent)
+            {
+              "@type": "ListItem",
+              "position": {{ $index + 1 }},
+      "name": "{{ $parent->name }}",
+      "url": "{{ route('categories.show', $parent->slug) }}"
+    }@if(!$loop->last),@endif
+        @endforeach
+        ]
+      }
+    </script>
+@endsection
 
 @section('content')
     <section class="categories-section">
