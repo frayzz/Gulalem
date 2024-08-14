@@ -50,7 +50,7 @@
         @else
             <div class="products-list">
                 @foreach($products as $product)
-                    <div class="product" itemscope itemtype="http://schema.org/Product">
+                    <div class="product">
                         <div class="illustration">
                             <a href="{{ route('public.show', ['slug' => $product->slug]) }}">
                                 @if($product->images->isNotEmpty())
