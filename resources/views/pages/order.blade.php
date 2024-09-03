@@ -11,7 +11,8 @@
         </div>
     </div>
     @if(session('success'))
-        <div id="success-message" class="fixed inset-0 bg-white flex items-center justify-center z-50">
+        <!-- Поменяли ID на уникальный -->
+        <div id="success-message-active" class="fixed inset-0 bg-white flex items-center justify-center z-50">
             <div class="text-center">
                 <svg class="w-16 h-16 text-green-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -21,10 +22,12 @@
             </div>
         </div>
         <script>
-            setTimeout(() => {
-                document.getElementById('success-message').style.display = 'none';
-                window.location.href = '{{ url('/') }}';
-            }, 5000); // Перенаправление через 5 секунд
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(() => {
+                    document.getElementById('success-message-active').style.display = 'none';
+                    window.location.href = '{{ url('/') }}';
+                }, 5000); // Перенаправление через 5 секунд
+            });
         </script>
     @endif
 
