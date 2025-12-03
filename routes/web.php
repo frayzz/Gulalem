@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Public\IndexController;
 use App\Http\Controllers\Public\OrderController;
+use App\Http\Controllers\Public\StoreController;
 
 
 
@@ -19,6 +20,8 @@ Route::get('/categories/{slug}', [App\Http\Controllers\Public\CategoryController
 // Order
 Route::get('/order/{slug}/', [OrderController::class, 'index'])->name('order.index');
 Route::post('/submit-order', [OrderController::class, 'store'])->name('submit.order');
+// Store
+Route::get('/store/{slug}', [StoreController::class, 'show'])->name('store.show');
 
 // SMS Mobizon Verif
 Route::post('/send-verification-code', [OrderController::class, 'sendVerificationCode'])->name('send.verification.code');
