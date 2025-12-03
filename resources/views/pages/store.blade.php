@@ -9,19 +9,19 @@
         {
           "@context": "https://schema.org",
           "@type": "Store",
-          "name": "{{ $shop->name }}",
+          "name": "{{ $store->name }}",
           "description": "{{ $meta['description'] }}",
           "image": "{{ $meta['og_image'] }}",
-          "url": "{{ route('shop.show', ['slug' => $shop->slug]) }}",
+          "url": "{{ route('shop.show', ['slug' => $store->slug]) }}",
           "address": {
             "@type": "PostalAddress",
-            "addressLocality": "{{ $shop->city ?? 'Алматы' }}",
-            "addressRegion": "{{ $shop->region ?? 'KZ' }}",
-            "streetAddress": "{{ $shop->street ?? 'Толе би' }}",
-            "postalCode": "{{ $shop->postal_code ?? '050000' }}",
+            "addressLocality": "{{ $store->city ?? 'Алматы' }}",
+            "addressRegion": "{{ $store->region ?? 'KZ' }}",
+            "streetAddress": "{{ $store->street ?? 'Толе би' }}",
+            "postalCode": "{{ $store->postal_code ?? '050000' }}",
             "addressCountry": "KZ"
           },
-          "telephone": "{{ $shop->phone ?? '' }}"
+          "telephone": "{{ $store->phone ?? '' }}"
         }
     </script>
 
@@ -61,34 +61,34 @@
     <section class="shop-header">
         <div class="shop-info">
             <div class="shop-logo">
-                @if($shop->logo)
-                    <img src="{{ asset('storage/' . $shop->logo) }}"
-                         alt="{{ $shop->name }}"
+                @if($store->logo)
+                    <img src="{{ asset('storage/' . $store->logo) }}"
+                         alt="{{ $store->name }}"
                          class="w-24 h-24 object-cover rounded-full">
                 @else
                     <img src="{{ asset('images/no-image.png') }}"
-                         alt="{{ $shop->name }}"
+                         alt="{{ $store->name }}"
                          class="w-24 h-24 object-cover rounded-full">
                 @endif
             </div>
 
             <div class="shop-text">
-                <h1>{{ $shop->name }}</h1>
+                <h1>{{ $store->name }}</h1>
 
-                @if($shop->description)
-                    <p>{{ $shop->description }}</p>
+                @if($store->description)
+                    <p>{{ $store->description }}</p>
                 @endif
 
                 <div class="shop-meta">
-                    @if($shop->city || $shop->street)
+                    @if($store->city || $store->street)
                         <div class="shop-address">
-                            📍 {{ $shop->city ?? 'Алматы' }}@if($shop->street), {{ $shop->street }}@endif
+                            📍 {{ $store->city ?? 'Алматы' }}@if($store->street), {{ $store->street }}@endif
                         </div>
                     @endif
 
-                    @if($shop->phone)
+                    @if($store->phone)
                         <div class="shop-phone">
-                            📞 <a href="tel:{{ $shop->phone }}">{{ $shop->phone }}</a>
+                            📞 <a href="tel:{{ $store->phone }}">{{ $store->phone }}</a>
                         </div>
                     @endif
                 </div>
