@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\Store\OwnerProductController;
+use App\Http\Controllers\Store\OwnerStoreController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Public\IndexController;
@@ -36,6 +38,25 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     Route::resource('categories', CategoryController::class)->except(['show']);
 });
+
+// Админка продавца
+Route::middleware(['auth'])
+    ->prefix('dashboard/store')
+    ->name('store.')
+    ->group(function () {
+        // Редактирование данных магазина
+        Route::get('/', [OwnerStoreController::class, 'edit'])->name('edit');
+        Route::put('/', [OwnerStoreController::class, 'update'])->name('update');
+
+        // Управление товарами
+        Route::get('products', [OwnerProductController::class, 'index'])->name('products.index');
+        Route::get('products/create', [OwnerProductController::class, 'create'])->name('products.create');
+        Route::post('products', [OwnerProductController::class, 'store'])->name('products.store');
+        Route::get('products/{product}/edit', [OwnerProductController::class, 'edit'])->name('products.edit');
+        Route::put('products/{product}', [OwnerProductController::class, 'update'])->name('products.update');
+        Route::delete('products/{product}', [OwnerProductController::class, 'destroy'])->name('products.destroy');
+    });
+
 
 
 Route::middleware('auth')->group(function () {

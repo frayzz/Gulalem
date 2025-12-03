@@ -337,6 +337,11 @@ body {
     padding: 0;
 }
 
+.main-section {
+    display: flex;
+    justify-content: center;
+}
+
 .products-list {
     display: flex;
     flex-wrap: wrap;
@@ -756,6 +761,116 @@ footer p {
 
 /* Categories END */
 
+/* Store Page */
+/* ====== Страница магазина (Store) ====== */
+
+/* Верхняя шапка магазина */
+.shop-header {
+    background-color: #ffffff;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.shop-info {
+    flex-direction: column;
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+/* Лого магазина */
+.shop-logo img {
+    width: 96px;
+    height: 96px;
+    border-radius: 9999px;
+    object-fit: cover;
+    border: 2px solid #f3f4f6;
+}
+
+/* Текстовая часть в шапке */
+.shop-text h1 {
+    font-size: 24px;
+    font-weight: 900;
+    color: #1f2933;
+    margin-bottom: 6px;
+    text-align: center;
+}
+
+.shop-text p {
+    font-size: 14px;
+    color: #4b5563;
+    margin-bottom: 6px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+/* Метаданные магазина (адрес, телефон) */
+.shop-meta {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.shop-address,
+.shop-phone {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.shop-phone a {
+    color: #007BA1;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.shop-phone a:hover {
+    text-decoration: underline;
+}
+
+/* Блок с товарами магазина */
+.shop-products {
+    max-width: 1000px;
+    margin: 10px auto 30px;
+    padding: 0 20px;
+}
+
+.shop-products h2 {
+    font-size: 20px;
+    font-weight: 900;
+    margin-bottom: 12px;
+    color: #1f2933;
+}
+
+/* Чуть улучшим заголовки товаров на этой странице */
+.shop-products .product-name h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+}
+
+/* Адаптив для шапки магазина */
+@media (max-width: 640px) {
+    .shop-info {
+        align-items: center;
+    }
+
+    .shop-header {
+        padding: 12px 15px;
+    }
+
+    .shop-products {
+        padding: 0 15px;
+    }
+}
+
+/* Store Page */
+
 /* Auth START */
 .auth-section {
     padding: 100px 15px;
@@ -766,6 +881,21 @@ footer p {
     /* Main Page START */
     .container {
         max-width: 100%;
+    }
+
+    header {
+        justify-content: center;
+    }
+
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .products-list,
+    .header-container {
+        width: 1000px;
     }
 
     .product {
@@ -783,4 +913,16 @@ footer p {
         padding-bottom: 100px;
     }
     /* Detail Page END */
+}
+
+@media (max-width: 640px) {
+    header {
+        display: block;
+    }
+
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 }

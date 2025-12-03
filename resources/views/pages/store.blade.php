@@ -66,7 +66,7 @@
                          alt="{{ $store->name }}"
                          class="w-24 h-24 object-cover rounded-full">
                 @else
-                    <img src="{{ asset('images/no-image.png') }}"
+                    <img src="{{ asset('images/no-image.webp') }}"
                          alt="{{ $store->name }}"
                          class="w-24 h-24 object-cover rounded-full">
                 @endif

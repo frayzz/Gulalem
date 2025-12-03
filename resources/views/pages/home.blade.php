@@ -51,7 +51,7 @@
 @endsection
 
 @section('content')
-    <section>
+    <section class="main-section">
         <div class="products-list">
             @foreach($products as $product)
                 <div class="product">

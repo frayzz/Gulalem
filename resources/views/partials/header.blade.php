@@ -1,13 +1,16 @@
 <header>
-    <div class="logo" data-nosnippet>
-        <a href="{{ route('public.index') }}">
-            <img src="{{ secure_asset('images/logo.svg') }}" alt="GULALEM Logo">
-            <span>GULALEM</span>
-        </a>
+    <div class="header-container">
+        <div class="logo" data-nosnippet>
+            <a href="{{ route('public.index') }}">
+                <img src="{{ secure_asset('images/logo.svg') }}" alt="GULALEM Logo">
+                <span>GULALEM</span>
+            </a>
+        </div>
+        <div class="change-language" data-nosnippet>
+            <a href="">
+                KZ
+            </a>
+        </div>
     </div>
-    <div class="change-language" data-nosnippet>
-        <a href="">
-            KZ
-        </a>
-    </div>
+
 </header>
