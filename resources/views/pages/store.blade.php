@@ -12,7 +12,7 @@
           "name": "{{ $store->name }}",
           "description": "{{ $meta['description'] }}",
           "image": "{{ $meta['og_image'] }}",
-          "url": "{{ route('shop.show', ['slug' => $store->slug]) }}",
+          "url": "{{ "https://gulalem.kz/store/" . $store->slug }}",
           "address": {
             "@type": "PostalAddress",
             "addressLocality": "{{ $store->city ?? 'Алматы' }}",
