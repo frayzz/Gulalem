@@ -1,5 +1,4 @@
 <?php
-// app/Http/Controllers/Store/ProductController.php
 
 namespace App\Http\Controllers\Store;
 
@@ -14,15 +13,25 @@ use Illuminate\Support\Facades\Storage;
 class OwnerProductController extends Controller
 {
     // список товаров магазина
-    public function index()
+    public function index(Request $request)
     {
         $store = auth()->user()->store; // подстрой под свою логику связи
-        $products = Product::with(['inventory', 'images'])
-            ->where('store_id', $store->id)
-            ->latest()
-            ->paginate(20);
 
-        return view('pages.store.products.index', compact('products', 'store'));
+        $status = $request->input('status'); // all | active | inactive
+
+        $query = Product::with(['inventory', 'images'])
+            ->where('store_id', $store->id)
+            ->latest();
+
+        if ($status === 'active') {
+            $query->where('is_active', true);
+        } elseif ($status === 'inactive') {
+            $query->where('is_active', false);
+        }
+
+        $products = $query->paginate(20)->withQueryString();
+
+        return view('pages.store.products.index', compact('products', 'store', 'status'));
     }
 
     // форма создания
@@ -31,9 +40,9 @@ class OwnerProductController extends Controller
         $store = auth()->user()->store;
 
         return view('pages.store.products.form', [
-            'store' => $store,
+            'store'   => $store,
             'product' => new Product(),
-            'mode' => 'create',
+            'mode'    => 'create',
         ]);
     }
 
@@ -47,6 +56,7 @@ class OwnerProductController extends Controller
             'description' => 'nullable|string',
             'price'       => 'required|numeric|min:0',
             'quantity'    => 'required|integer|min:0',
+            'is_active'   => 'nullable|boolean',
             'properties.*.name'  => 'nullable|string|max:255',
             'properties.*.value' => 'nullable|string|max:255',
             'images.*'    => 'nullable|image|max:4096',
@@ -58,6 +68,7 @@ class OwnerProductController extends Controller
             'name'        => $validated['name'],
             'description' => $validated['description'] ?? null,
             'price'       => $validated['price'],
+            'is_active'   => $request->boolean('is_active', true),
         ]);
 
         // наличие
@@ -87,14 +98,14 @@ class OwnerProductController extends Controller
                 ProductImage::create([
                     'product_id' => $product->id,
                     'image_url'  => $path,
-                    'format'     => 'large', // можешь потом сделать генерацию разных форматов
+                    'format'     => 'large',
                     'type'       => $file->getClientOriginalExtension(),
                 ]);
             }
         }
 
         return redirect()
-            ->route('pages.store.products.index')
+            ->route('store.products.index')
             ->with('success', 'Товар успешно создан');
     }
 
@@ -126,6 +137,7 @@ class OwnerProductController extends Controller
             'description' => 'nullable|string',
             'price'       => 'required|numeric|min:0',
             'quantity'    => 'required|integer|min:0',
+            'is_active'   => 'nullable|boolean',
             'properties.*.id'    => 'nullable|integer',
             'properties.*.name'  => 'nullable|string|max:255',
             'properties.*.value' => 'nullable|string|max:255',
@@ -136,6 +148,7 @@ class OwnerProductController extends Controller
             'name'        => $validated['name'],
             'description' => $validated['description'] ?? null,
             'price'       => $validated['price'],
+            'is_active'   => $request->boolean('is_active', true),
         ]);
 
         // наличие
@@ -164,7 +177,7 @@ class OwnerProductController extends Controller
             }
         }
 
-        // изображения — добавляем новые (удаление/замена можно сделать отдельной кнопкой)
+        // изображения — добавляем новые
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $file) {
                 $path = $file->store('products', 'public');
@@ -179,8 +192,23 @@ class OwnerProductController extends Controller
         }
 
         return redirect()
-            ->route('pages.store.products.index')
+            ->route('store.products.index')
             ->with('success', 'Товар обновлён');
+    }
+
+    // быстрый переключатель активности
+    public function toggleStatus(Product $product)
+    {
+        $store = auth()->user()->store;
+        abort_if($product->store_id !== $store->id, 403);
+
+        $product->update([
+            'is_active' => ! $product->is_active,
+        ]);
+
+        return redirect()
+            ->back()
+            ->with('success', $product->is_active ? 'Товар включён в витрину' : 'Товар скрыт с витрины');
     }
 
     // удаление товара
@@ -189,12 +217,10 @@ class OwnerProductController extends Controller
         $store = auth()->user()->store;
         abort_if($product->store_id !== $store->id, 403);
 
-        // при onDelete('cascade') всё, что связано, удалится само
         $product->delete();
 
         return redirect()
-            ->route('pages.store.products.index')
+            ->route('store.products.index')
             ->with('success', 'Товар удалён');
     }
 }
-

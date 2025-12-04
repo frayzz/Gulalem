@@ -55,6 +55,7 @@ Route::middleware(['auth'])
         Route::get('products/{product}/edit', [OwnerProductController::class, 'edit'])->name('products.edit');
         Route::put('products/{product}', [OwnerProductController::class, 'update'])->name('products.update');
         Route::delete('products/{product}', [OwnerProductController::class, 'destroy'])->name('products.destroy');
+        Route::patch('products/{product}/toggle-status', [OwnerProductController::class, 'toggleStatus'])->name('products.toggle-status');
     });
 
 

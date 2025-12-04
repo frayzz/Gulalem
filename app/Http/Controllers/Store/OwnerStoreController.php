@@ -33,6 +33,7 @@ class OwnerStoreController extends Controller
             'postal_code'  => 'nullable|string|max:20',
             'phone'        => 'nullable|string|max:32',
             'logo'         => 'nullable|image|max:4096',
+            'order_channel' => 'required|in:form,whatsapp',
         ]);
 
         // загрузка логотипа

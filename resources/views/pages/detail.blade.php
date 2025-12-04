@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', '🌷Купить ' . $product->name . ' в Алмате с доставкой | Gulalem')
-@section('description', $product->description . '. Доставка по городу Алматы. Лучшие цены на ' . $product->name . ' в нашем интернет-магазине.')
+@section('title', '🌷Купить ' . $product->name)
+@section('description', $product->description)
 
-@section('og_title', '🌷Купить ' . $product->name . ' в Алматы')
-@section('og_description', 'Лучшие цены на ' . $product->description . '. Доставка по городу Алматы.')
+@section('og_title', '🌷Купить ' . $product->name)
+@section('og_description', $product->description )
 @section('og_image', secure_asset('storage/' . $product->images->first()->image_url))
 
 @section('structured_data')
@@ -49,21 +49,74 @@
                     <img src="{{ secure_asset('images/no-image.png') }}" alt="No image" class="w-24 h-24 object-cover">
                 @endif
             </div>
+            @if(isset($store))
+                <div class="product-store-block">
+                    <a href="{{ route('store.show', ['slug' => $store->slug]) }}"
+                       class="product-store-link">
+
+                        <div class="product-store-avatar">
+                            @if($store->logo)
+                                <img src="{{ asset('storage/' . $store->logo) }}"
+                                     alt="{{ $store->name }}">
+                            @else
+                                <img src="{{ asset('images/no-image.webp') }}"
+                                     alt="{{ $store->name }}">
+                            @endif
+                        </div>
+
+                        <div class="product-store-info">
+                            <div class="product-store-title">
+                                Магазин
+                            </div>
+                            <div class="product-store-name">
+                                {{ $store->name }}
+                            </div>
+                        </div>
+
+                        <div class="product-store-arrow">
+                            →
+                        </div>
+
+                    </a>
+                </div>
+            @endif
             <div class="detail-short-description">
                 <div class="product-name">
                     <h1>{{ $product->name }}</h1>
                 </div>
                 <div class="available-tag">
-                    <span>новинка</span>
+                    <!--
+                    <span>новинка</span>-->
                 </div>
 
                 <div class="price">{{ $product->price }}</div>
                 <div class="product-description">
                     <p>{{ $product->description . '. Доставка по городу Алматы.' }}</p>
                 </div>
-                <a href="{{ route('order.index', ['slug' => $product->slug]) }}">
-                    <button class="detail-order-button">Заказать</button>
-                </a>
+                @if(isset($store) && $store->isWhatsAppOrder() && $store->phone)
+                    @php
+                        $waPhone = preg_replace('/\D+/', '', $store->phone);
+                        $waText = rawurlencode(
+                            "Здравствуйте! Хочу заказать\n" . route('public.show', ['slug' => $product->slug])
+                        );
+                    @endphp
+
+                    <a href="https://wa.me/{{ $waPhone }}?text={{ $waText }}"
+                       target="_blank"
+                       rel="noopener">
+                        <button class="detail-order-button">
+                            Написать в WhatsApp
+                        </button>
+                    </a>
+
+                @else
+                    <a href="{{ route('order.index', ['slug' => $product->slug]) }}">
+                        <button class="detail-order-button">
+                            Заказать
+                        </button>
+                    </a>
+                @endif
+
 
             </div>
         </div>

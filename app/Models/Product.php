@@ -12,7 +12,19 @@ class Product extends Model
     use HasFactory;
     use Sluggable;
 
-    protected $fillable = ['name', 'description', 'price', 'store_id', 'category_id', 'slug'];
+    protected $fillable = [
+        'is_active',
+        'name',
+        'description',
+        'price',
+        'store_id',
+        'category_id',
+        'slug'
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 
     public function store()
     {
@@ -56,6 +68,11 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
     }
 
     protected static function booted()

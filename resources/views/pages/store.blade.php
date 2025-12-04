@@ -97,13 +97,47 @@
     </section>
 
     <section class="shop-products">
-        <h2>Товары магазина</h2>
+
+        {{-- Фильтры по цене и сортировке --}}
+        <form method="GET"
+              action="{{ route('store.show', ['slug' => $store->slug]) }}"
+              class="shop-filters">
+            {{-- Фильтр по цене --}}
+            <div>
+                <label for="price" style="font-size:14px; color:#555;"></label>
+                <select name="price"
+                        id="price"
+                        onchange="this.form.submit()"
+                        style="padding:6px 8px; border-radius:8px; border:1px solid #ddd; font-size:14px;">
+                    <option value="" {{ empty($price) ? 'selected' : '' }}>Цена</option>
+                    <option value="15000" {{ $price === '15000' ? 'selected' : '' }}>до 15 000 ₸</option>
+                    <option value="20000" {{ $price === '20000' ? 'selected' : '' }}>до 20 000 ₸</option>
+                    <option value="40000" {{ $price === '40000' ? 'selected' : '' }}>до 40 000 ₸</option>
+                    <option value="60000" {{ $price === '60000' ? 'selected' : '' }}>до 60 000 ₸</option>
+                </select>
+            </div>
+
+            {{-- Сортировка по цене --}}
+            <div>
+                <label for="sort" style="font-size:14px; color:#555;"></label>
+                <select name="sort"
+                        id="sort"
+                        onchange="this.form.submit()
+"
+                        style="padding:6px 8px; border-radius:8px; border:1px solid #ddd; font-size:14px;">
+                    <option value="" {{ empty($sort) ? 'selected' : '' }}>Сортировка</option>
+                    <option value="price_asc" {{ $sort === 'price_asc' ? 'selected' : '' }}>По цене (дешевле → дороже)</option>
+                    <option value="price_desc" {{ $sort === 'price_desc' ? 'selected' : '' }}>По цене (дороже → дешевле)</option>
+                </select>
+            </div>
+        </form>
 
         @if($products->isEmpty())
             <p>У этого магазина пока нет активных товаров.</p>
         @else
             <div class="products-list">
-                @foreach($products as $product)
+
+            @foreach($products as $product)
                     <div class="product">
                         <div class="illustration">
                             <a href="{{ route('public.show', ['slug' => $product->slug]) }}">
@@ -148,10 +182,31 @@
                         </div>
 
                         <div class="nav-buttons">
-                            <a href="{{ route('order.index', ['slug' => $product->slug]) }}">
-                                <button class="order-button">Заказать</button>
-                            </a>
+                            @if($store->isWhatsAppOrder() && $store->phone)
+                                @php
+                                    $waPhone = preg_replace('/\D+/', '', $store->phone);
+                                    $waText = rawurlencode(
+                                        "Здравствуйте! Хочу заказать\n" . route('public.show', ['slug' => $product->slug])
+                                    );
+                                @endphp
+
+                                <a href="https://wa.me/{{ $waPhone }}?text={{ $waText }}"
+                                   target="_blank"
+                                   rel="noopener">
+                                    <button class="order-button">
+                                        WhatsApp
+                                    </button>
+                                </a>
+
+                            @else
+                                <a href="{{ route('order.index', ['slug' => $product->slug]) }}">
+                                    <button class="order-button">
+                                        Заказать
+                                    </button>
+                                </a>
+                            @endif
                         </div>
+
                     </div>
                 @endforeach
             </div>

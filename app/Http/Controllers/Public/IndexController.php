@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
@@ -11,7 +10,7 @@ class IndexController extends Controller
 {
     public function index(Request $request) {
         // Получаем значения фильтров из запроса
-        $sort = $request->input('sort');
+        $sort  = $request->input('sort');
         $price = $request->input('price');
 
         // Если пользователь авторизован
@@ -23,8 +22,8 @@ class IndexController extends Controller
             }
         }
 
-        // Базовый запрос
-        $query = Product::query();
+        // Базовый запрос — только активные товары
+        $query = Product::active();
 
         // Обработка сортировки
         if ($sort) {
@@ -65,7 +64,7 @@ class IndexController extends Controller
         // Получаем отфильтрованные данные
         $products = $query->get();
 
-        if ( isset($activeOrders) ) {
+        if (isset($activeOrders)) {
             return view('pages.home', compact('products', 'activeOrders'));
         } else {
             return view('pages.home', compact('products'));
@@ -73,15 +72,22 @@ class IndexController extends Controller
     }
 
     public function show($slug) {
-        $product = Product::where('slug', $slug)->firstOrFail();
+        // Публично показываем только активные товары
+        $product = Product::active()
+            ->where('slug', $slug)
+            ->firstOrFail();
+        $store = $product->store;
+
         $meta = [
-            'title' => $product->name,
-            'description' => $product->description,
-            'og_title' => $product->name,
+            'title'          => $product->name,
+            'description'    => $product->description,
+            'og_title'       => $product->name,
             'og_description' => $product->description,
-            'og_image' => $product->images->isNotEmpty() ? asset('storage/' . $product->images->first()->image_url) : asset('images/no-image.png'),
+            'og_image'       => $product->images->isNotEmpty()
+                ? asset('storage/' . $product->images->first()->image_url)
+                : asset('images/no-image.png'),
         ];
 
-        return view('pages.detail', compact('product', 'meta'));
+        return view('pages.detail', compact('product', 'meta', 'store'));
     }
 }

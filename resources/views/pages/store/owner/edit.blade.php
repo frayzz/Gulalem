@@ -4,17 +4,16 @@
 
 @section('content')
     <section class="filters">
+        <div style="margin-bottom: 12px;">
+            <a href="{{ route('store.products.index') }}" style="font-size:14px; color:#007BA1; text-decoration:none;">
+                ← Вернуться к товарам
+            </a>
+        </div>
         <h1>Мой магазин</h1>
 
         <p style="margin-top:8px; color:#555;">
             Здесь вы можете изменить название, ссылку, контактные данные и логотип магазина.
         </p>
-
-        <div style="margin-top: 12px;">
-            <a href="{{ route('store.products.index') }}" style="font-size:14px; color:#007BA1; text-decoration:none;">
-                ← Вернуться к товарам
-            </a>
-        </div>
     </section>
 
     <section class="order">
@@ -93,6 +92,18 @@
                        name="phone"
                        class="custom-input"
                        value="{{ old('phone', $store->phone) }}">
+            </div>
+
+            <div class="input-container">
+                <label>Способ приёма заказов</label>
+                <select name="order_channel" class="custom-input">
+                    <option value="form" disabled {{ $store->order_channel === 'form' ? 'selected' : '' }}>
+                        Через сайт
+                    </option>
+                    <option value="whatsapp" selected {{ $store->order_channel === 'whatsapp' ? 'selected' : '' }}>
+                        Через WhatsApp
+                    </option>
+                </select>
             </div>
 
             {{-- Логотип --}}

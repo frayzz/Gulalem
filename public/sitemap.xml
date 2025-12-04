@@ -5,30 +5,6 @@
     
             </url>
     <url>
-        <loc>https://gulalem/categories</loc>
-    
-            </url>
-    <url>
-        <loc>https://gulalem/categories/uncategorized</loc>
-    
-            </url>
-    <url>
-        <loc>https://gulalem/categories/test</loc>
-    
-            </url>
-    <url>
-        <loc>https://gulalem/categories/rozy</loc>
-    
-            </url>
-    <url>
-        <loc>https://gulalem/categories/test2</loc>
-    
-            </url>
-    <url>
-        <loc>https://gulalem/categories/test3</loc>
-    
-            </url>
-    <url>
         <loc>https://gulalem/products/rozy-fioletovye-fioletovye-fioletovye</loc>
     
             </url>
@@ -54,6 +30,10 @@
             </url>
     <url>
         <loc>https://gulalem/products/tyulpany-pionovye</loc>
+    
+            </url>
+    <url>
+        <loc>https://gulalem/products/test-flowers</loc>
     
             </url>
 </urlset>

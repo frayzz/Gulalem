@@ -20,6 +20,7 @@ class Store extends Model
         'phone',
         'logo',
         'owner_id',
+        'order_channel'
     ];
 
     public function owner()
@@ -30,5 +31,15 @@ class Store extends Model
     public function products()
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function isWhatsAppOrder(): bool
+    {
+        return $this->order_channel === 'whatsapp';
+    }
+
+    public function isFormOrder(): bool
+    {
+        return $this->order_channel === 'form';
     }
 }

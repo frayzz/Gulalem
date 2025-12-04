@@ -54,6 +54,9 @@
     <section class="main-section">
         <div class="products-list">
             @foreach($products as $product)
+                @php
+                    $store = $product->store;
+                @endphp
                 <div class="product">
                     <div class="illustration">
                         <a href="{{ route('public.show', ['slug' => $product->slug]) }}">
@@ -84,9 +87,29 @@
                         <div class="price">{{ $product->price }}₸</div>
                     </div>
                     <div class="nav-buttons">
-                        <a href="{{ route('order.index', ['slug' => $product->slug]) }}">
-                            <button class="order-button">Заказать</button>
-                        </a>
+                        @if($store->isWhatsAppOrder() && $store->phone)
+                            @php
+                                $waPhone = preg_replace('/\D+/', '', $store->phone);
+                                $waText = rawurlencode(
+                                    "Здравствуйте! Хочу заказать\n" . route('public.show', ['slug' => $product->slug])
+                                );
+                            @endphp
+
+                            <a href="https://wa.me/{{ $waPhone }}?text={{ $waText }}"
+                               target="_blank"
+                               rel="noopener">
+                                <button class="order-button">
+                                    WhatsApp
+                                </button>
+                            </a>
+
+                        @else
+                            <a href="{{ route('order.index', ['slug' => $product->slug]) }}">
+                                <button class="order-button">
+                                    Заказать
+                                </button>
+                            </a>
+                        @endif
                     </div>
                 </div>
             @endforeach

@@ -4,7 +4,16 @@
 
 @section('content')
     <section class="order-header">
-        <h1>{{ $mode === 'create' ? 'Добавить товар' : 'Редактировать товар' }}</h1>
+        <div class="store-dashboard-header-row">
+            <div class="store-dashboard-header-left">
+                <a href="{{ route('store.products.index') }}" style="font-size:14px; color:#007BA1; text-decoration:none;">
+                    ← Вернуться к товарам
+                </a>
+                <h1 class="store-dashboard-title">
+                    {{ $mode === 'create' ? 'Добавить товар' : 'Редактировать товар' }}
+                </h1>
+            </div>
+        </div>
     </section>
 
     <section class="order">
@@ -44,7 +53,7 @@
                        value="{{ old('quantity', optional($product->inventory)->quantity ?? 0) }}" required>
                 @error('quantity')<div style="color:red;font-size:12px;">{{ $message }}</div>@enderror
             </div>
-
+            <!--
             <div class="input-container">
                 <label>Свойства товара (например: Цвет, Размер)</label>
 
@@ -79,6 +88,7 @@
                     @endif
                 </div>
 
+
                 <button type="button"
                         class="order-button"
                         style="margin-top:10px;font-size:16px;padding:8px 12px;"
@@ -86,6 +96,7 @@
                     + Добавить свойство
                 </button>
             </div>
+            -->
 
             <div class="input-container">
                 <label for="images">Фотографии товара</label>
