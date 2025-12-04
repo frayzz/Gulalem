@@ -9,7 +9,18 @@ class Store extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'owner_id'];
+    protected $fillable = [
+        'name',
+        'slug',
+        'description',
+        'city',
+        'region',
+        'street',
+        'postal_code',
+        'phone',
+        'logo',
+        'owner_id',
+    ];
 
     public function owner()
     {
