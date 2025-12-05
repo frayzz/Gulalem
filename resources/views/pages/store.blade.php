@@ -1,7 +1,20 @@
 @extends('layouts.app')
 
-@section('title', $meta['title'])
-@section('description', $meta['description'])
+@php
+    $ogImage = $store->logo
+        ? asset('storage/' . $store->logo)
+        : asset('images/no-image.webp');
+@endphp
+
+@section('title', 'Каталог магазина - ' . $store->name)
+@section('description', $store->description)
+
+@section('title', 'Каталог магазина - ' . $store->name)
+@section('description', $store->description)
+
+@section('og_title', 'Каталог магазина - ' . $store->name)
+@section('og_description', $store->description )
+@section('og_image', $ogImage)
 
 @section('structured_data')
     {{-- Магазин как Store --}}
