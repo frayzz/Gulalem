@@ -99,22 +99,23 @@
             -->
 
             <div class="input-container">
-                <label for="images">Фотографии товара</label>
-                <input id="images" type="file" name="images[]" multiple>
+                <label for="image">Фотография товара</label>
+                <input id="image" type="file" name="image">
 
                 @if($product->images && $product->images->isNotEmpty())
-                    <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
-                        @foreach($product->images as $img)
-                            <div>
-                                <img src="{{ asset('storage/' . $img->image_url) }}"
-                                     alt=""
-                                     style="width:80px;height:80px;object-fit:cover;border-radius:8px;">
-                            </div>
-                        @endforeach
+                    @php
+                        $img = $product->images->first();
+                    @endphp
+                    <div style="margin-top:10px;">
+                        <img src="{{ asset('storage/' . $img->image_url) }}"
+                             alt="{{ $product->name }}"
+                             style="width:80px;height:80px;object-fit:cover;border-radius:8px;">
                     </div>
                 @endif
 
-                @error('images.*')<div style="color:red;font-size:12px;">{{ $message }}</div>@enderror
+                @error('image')
+                <div style="color:red;font-size:12px;">{{ $message }}</div>
+                @enderror
             </div>
 
             <button type="submit" class="order-button">

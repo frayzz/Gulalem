@@ -59,7 +59,8 @@ class OwnerProductController extends Controller
             'is_active'   => 'nullable|boolean',
             'properties.*.name'  => 'nullable|string|max:255',
             'properties.*.value' => 'nullable|string|max:255',
-            'images.*'    => 'nullable|image|max:4096',
+            // ОДНО изображение
+            'image'       => 'nullable|image|max:4096',
         ]);
 
         // создаём товар
@@ -90,18 +91,17 @@ class OwnerProductController extends Controller
             }
         }
 
-        // изображения
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $file) {
-                $path = $file->store('products', 'public');
+        // изображение — только одно
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $path = $file->store('products', 'public');
 
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'image_url'  => $path,
-                    'format'     => 'large',
-                    'type'       => $file->getClientOriginalExtension(),
-                ]);
-            }
+            ProductImage::create([
+                'product_id' => $product->id,
+                'image_url'  => $path,
+                'format'     => 'large',
+                'type'       => $file->getClientOriginalExtension(),
+            ]);
         }
 
         return redirect()
@@ -141,7 +141,8 @@ class OwnerProductController extends Controller
             'properties.*.id'    => 'nullable|integer',
             'properties.*.name'  => 'nullable|string|max:255',
             'properties.*.value' => 'nullable|string|max:255',
-            'images.*'    => 'nullable|image|max:4096',
+            // ОДНО изображение
+            'image'       => 'nullable|image|max:4096',
         ]);
 
         $product->update([
@@ -177,18 +178,29 @@ class OwnerProductController extends Controller
             }
         }
 
-        // изображения — добавляем новые
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $file) {
-                $path = $file->store('products', 'public');
-
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'image_url'  => $path,
-                    'format'     => 'large',
-                    'type'       => $file->getClientOriginalExtension(),
-                ]);
+        // изображение — если загружено новое, то:
+        // 1) удаляем старое(ые) изображение(я) + файлы
+        // 2) создаём новое
+        if ($request->hasFile('image')) {
+            // удалить файлы старых изображений
+            foreach ($product->images as $img) {
+                if ($img->image_url) {
+                    Storage::disk('public')->delete($img->image_url);
+                }
             }
+            // удалить записи в БД
+            $product->images()->delete();
+
+            // сохранить новое
+            $file = $request->file('image');
+            $path = $file->store('products', 'public');
+
+            ProductImage::create([
+                'product_id' => $product->id,
+                'image_url'  => $path,
+                'format'     => 'large',
+                'type'       => $file->getClientOriginalExtension(),
+            ]);
         }
 
         return redirect()
@@ -216,6 +228,14 @@ class OwnerProductController extends Controller
     {
         $store = auth()->user()->store;
         abort_if($product->store_id !== $store->id, 403);
+
+        // заодно удалим файл(ы) картинки
+        foreach ($product->images as $img) {
+            if ($img->image_url) {
+                Storage::disk('public')->delete($img->image_url);
+            }
+        }
+        $product->images()->delete();
 
         $product->delete();
 
