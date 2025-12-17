@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\Crm\CustomerController;
 use App\Http\Controllers\Api\Crm\InventoryController;
 use App\Http\Controllers\Api\Crm\OrderController;
 use App\Http\Controllers\Api\Crm\PaymentController;
+use App\Http\Controllers\Api\Crm\ProductController;
+use App\Http\Controllers\Api\Crm\StoreController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -15,6 +17,12 @@ Route::get('/user', function (Request $request) {
 
 Route::prefix('crm')->group(function () {
     Route::apiResource('customers', CustomerController::class);
+
+    Route::get('stores', [StoreController::class, 'index']);
+    Route::post('stores', [StoreController::class, 'store']);
+
+    Route::get('products', [ProductController::class, 'index']);
+    Route::post('products', [ProductController::class, 'store']);
 
     Route::get('inventory/batches', [InventoryController::class, 'batches']);
     Route::get('inventory/movements', [InventoryController::class, 'movements']);

@@ -29,10 +29,10 @@ const StatusPill = ({ tone = 'slate', children }) =>
         children,
     );
 
-const Section = ({ title, description, actions, children }) =>
+const Section = ({ id, title, description, actions, children }) =>
     h(
         'section',
-        { className: 'rounded-2xl bg-white/80 p-6 shadow-sm ring-1 ring-slate-200' },
+        { id, className: 'rounded-2xl bg-white/80 p-6 shadow-sm ring-1 ring-slate-200' },
         [
             h(
                 'div',
@@ -68,6 +68,10 @@ function App() {
     const [ordersLoading, setOrdersLoading] = useState(false);
     const [orderFilters, setOrderFilters] = useState({ status: '', delivery_type: '' });
 
+    const [stores, setStores] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [catalogLoading, setCatalogLoading] = useState(false);
+
     const [inventoryBatches, setInventoryBatches] = useState([]);
     const [inventoryMovements, setInventoryMovements] = useState([]);
 
@@ -101,6 +105,16 @@ function App() {
     const [shiftForm, setShiftForm] = useState({ store_id: '', cash_start: '', cash_end: '', shift_id: '' });
 
     const [recipeForm, setRecipeForm] = useState({ bouquet_product_id: '', name: '', itemsInput: '' });
+    const [recipeItems, setRecipeItems] = useState([{ product_id: '', qty: '' }]);
+
+    const [storeForm, setStoreForm] = useState({ name: '', city: '', order_channel: 'form' });
+    const [productForm, setProductForm] = useState({
+        name: '',
+        price: '',
+        store_id: '',
+        type: 'product',
+        unit: 'шт',
+    });
 
     const handleError = (err, fallback) => {
         console.error(err);
@@ -141,6 +155,20 @@ function App() {
         }
     };
 
+    const loadCatalog = async () => {
+        resetAlerts();
+        setCatalogLoading(true);
+        try {
+            const [storesRes, productsRes] = await Promise.all([api.get('/stores'), api.get('/products')]);
+            setStores(normalizeCollection(storesRes.data));
+            setProducts(normalizeCollection(productsRes.data));
+        } catch (err) {
+            handleError(err, 'Не удалось загрузить справочники');
+        } finally {
+            setCatalogLoading(false);
+        }
+    };
+
     const loadShifts = async () => {
         resetAlerts();
         try {
@@ -164,6 +192,7 @@ function App() {
     useEffect(() => {
         loadOrders();
         loadInventory();
+        loadCatalog();
         loadShifts();
         loadRecipes();
     }, []);
@@ -293,7 +322,11 @@ function App() {
         event.preventDefault();
         resetAlerts();
         try {
-            const items = parseRecipeItems(recipeForm.itemsInput);
+            const itemsFromBuilder = recipeItems
+                .map((item) => ({ product_id: Number(item.product_id), qty: Number(item.qty || 1) }))
+                .filter((item) => item.product_id && !Number.isNaN(item.qty) && item.qty > 0);
+            const itemsFromTextarea = parseRecipeItems(recipeForm.itemsInput || '');
+            const items = itemsFromBuilder.length ? itemsFromBuilder : itemsFromTextarea;
             await api.post('/bouquet-recipes', {
                 bouquet_product_id: recipeForm.bouquet_product_id,
                 name: recipeForm.name,
@@ -301,13 +334,54 @@ function App() {
             });
             setMessage('Рецепт сохранён');
             setRecipeForm({ bouquet_product_id: '', name: '', itemsInput: '' });
+            setRecipeItems([{ product_id: '', qty: '' }]);
             await loadRecipes();
         } catch (err) {
             handleError(err, 'Не удалось сохранить рецепт');
         }
     };
 
+    const createStore = async (event) => {
+        event.preventDefault();
+        resetAlerts();
+        try {
+            const { data } = await api.post('/stores', storeForm);
+            setStores([data, ...stores]);
+            setMessage('Магазин сохранён');
+            setStoreForm({ name: '', city: '', order_channel: 'form' });
+        } catch (err) {
+            handleError(err, 'Не удалось сохранить магазин');
+        }
+    };
+
+    const createProduct = async (event) => {
+        event.preventDefault();
+        resetAlerts();
+        try {
+            const payload = {
+                ...productForm,
+                price: Number(productForm.price),
+            };
+            const { data } = await api.post('/products', payload);
+            setProducts([data, ...products]);
+            setMessage('Товар сохранён');
+            setProductForm({ name: '', price: '', store_id: '', type: 'product', unit: 'шт' });
+        } catch (err) {
+            handleError(err, 'Не удалось сохранить товар');
+        }
+    };
+
     const openShifts = useMemo(() => shifts.filter((shift) => !shift.closed_at), [shifts]);
+
+    const productOptions = useMemo(
+        () => products.map((product) => ({ value: product.id, label: `${product.name} (#${product.id})` })),
+        [products],
+    );
+
+    const storeOptions = useMemo(
+        () => stores.map((store) => ({ value: store.id, label: `${store.name} (#${store.id})` })),
+        [stores],
+    );
 
     return h('div', { className: 'min-h-screen bg-slate-50 px-4 py-8 md:px-8' }, [
         h('div', { className: 'mx-auto max-w-7xl space-y-6' }, [
@@ -323,11 +397,30 @@ function App() {
                 ]),
                 h('div', { className: 'flex gap-2' }, [
                     h(
+                        'a',
+                        {
+                            href: '#catalog',
+                            className:
+                                'hidden rounded-lg border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-100 sm:inline-flex',
+                        },
+                        'Справочники',
+                    ),
+                    h(
+                        'a',
+                        {
+                            href: '#orders',
+                            className:
+                                'hidden rounded-lg border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-100 sm:inline-flex',
+                        },
+                        'Заказы',
+                    ),
+                    h(
                         'button',
                         {
                             onClick: () => {
                                 loadOrders();
                                 loadInventory();
+                                loadCatalog();
                                 loadShifts();
                                 loadRecipes();
                             },
@@ -347,6 +440,168 @@ function App() {
                 : null,
 
             Section({
+                id: 'catalog',
+                title: 'Справочники',
+                description: 'Магазины и товары для удобного выбора в формах.',
+                actions: [
+                    catalogLoading
+                        ? h('span', { className: 'text-xs text-slate-500' }, 'Обновляем данные...')
+                        : h(
+                            'button',
+                            {
+                                onClick: loadCatalog,
+                                className:
+                                    'inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50',
+                            },
+                            'Обновить списки',
+                        ),
+                ],
+                children: [
+                    h('div', { id: 'catalog', className: 'grid gap-4 lg:grid-cols-2' }, [
+                        h('form', { onSubmit: createStore, className: 'space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4' }, [
+                            h('div', { className: 'flex items-center justify-between' }, [
+                                h('p', { className: 'text-sm font-semibold text-slate-900' }, 'Добавить магазин'),
+                                h('span', { className: 'text-[11px] uppercase tracking-wide text-slate-500' }, `${stores.length} в списке`),
+                            ]),
+                            h('div', { className: 'space-y-2' }, [
+                                h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Название'),
+                                h('input', {
+                                    className:
+                                        'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                    placeholder: 'Цветочный #1',
+                                    required: true,
+                                    value: storeForm.name,
+                                    onChange: (event) => setStoreForm({ ...storeForm, name: event.target.value }),
+                                }),
+                            ]),
+                            h('div', { className: 'space-y-2' }, [
+                                h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Город'),
+                                h('input', {
+                                    className:
+                                        'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                    placeholder: 'Алматы',
+                                    value: storeForm.city,
+                                    onChange: (event) => setStoreForm({ ...storeForm, city: event.target.value }),
+                                }),
+                            ]),
+                            h('div', { className: 'space-y-2' }, [
+                                h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Канал заказов'),
+                                h(
+                                    'select',
+                                    {
+                                        className:
+                                            'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-amber-500 focus:ring-amber-500',
+                                        value: storeForm.order_channel,
+                                        onChange: (event) => setStoreForm({ ...storeForm, order_channel: event.target.value }),
+                                    },
+                                    [
+                                        h('option', { value: 'form' }, 'Форма сайта'),
+                                        h('option', { value: 'whatsapp' }, 'WhatsApp'),
+                                    ],
+                                ),
+                            ]),
+                            h(
+                                'button',
+                                {
+                                    type: 'submit',
+                                    className:
+                                        'inline-flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-slate-800',
+                                },
+                                'Сохранить магазин',
+                            ),
+                        ]),
+                        h('form', { onSubmit: createProduct, className: 'space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4' }, [
+                            h('div', { className: 'flex items-center justify-between' }, [
+                                h('p', { className: 'text-sm font-semibold text-slate-900' }, 'Добавить товар'),
+                                h('span', { className: 'text-[11px] uppercase tracking-wide text-slate-500' }, `${products.length} в списке`),
+                            ]),
+                            h('div', { className: 'space-y-2' }, [
+                                h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Название товара'),
+                                h('input', {
+                                    className:
+                                        'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                    placeholder: 'Розы 7шт',
+                                    required: true,
+                                    value: productForm.name,
+                                    onChange: (event) => setProductForm({ ...productForm, name: event.target.value }),
+                                }),
+                            ]),
+                            h('div', { className: 'grid gap-3 md:grid-cols-2' }, [
+                                h('div', { className: 'space-y-2' }, [
+                                    h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Цена, ₸'),
+                                    h('input', {
+                                        className:
+                                            'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                        placeholder: '10000',
+                                        type: 'number',
+                                        step: '0.01',
+                                        required: true,
+                                        value: productForm.price,
+                                        onChange: (event) => setProductForm({ ...productForm, price: event.target.value }),
+                                    }),
+                                ]),
+                                h('div', { className: 'space-y-2' }, [
+                                    h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Магазин'),
+                                    h(
+                                        'select',
+                                        {
+                                            className:
+                                                'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-amber-500 focus:ring-amber-500',
+                                            required: true,
+                                            value: productForm.store_id,
+                                            onChange: (event) => setProductForm({ ...productForm, store_id: event.target.value }),
+                                        },
+                                        [
+                                            h('option', { value: '' }, 'Выберите магазин'),
+                                            ...storeOptions.map((store) => h('option', { key: store.value, value: store.value }, store.label)),
+                                        ],
+                                    ),
+                                ]),
+                            ]),
+                            h('div', { className: 'grid gap-3 md:grid-cols-2' }, [
+                                h('div', { className: 'space-y-2' }, [
+                                    h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Тип'),
+                                    h(
+                                        'select',
+                                        {
+                                            className:
+                                                'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-amber-500 focus:ring-amber-500',
+                                            value: productForm.type,
+                                            onChange: (event) => setProductForm({ ...productForm, type: event.target.value }),
+                                        },
+                                        [
+                                            h('option', { value: 'product' }, 'Обычный товар'),
+                                            h('option', { value: 'bouquet' }, 'Букет'),
+                                        ],
+                                    ),
+                                ]),
+                                h('div', { className: 'space-y-2' }, [
+                                    h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Ед. изм.'),
+                                    h('input', {
+                                        className:
+                                            'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                        placeholder: 'шт / кг / усл',
+                                        value: productForm.unit,
+                                        onChange: (event) => setProductForm({ ...productForm, unit: event.target.value }),
+                                    }),
+                                ]),
+                            ]),
+                            h(
+                                'button',
+                                {
+                                    type: 'submit',
+                                    className:
+                                        'inline-flex w-full items-center justify-center gap-2 rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-amber-500',
+                                },
+                                'Сохранить товар',
+                            ),
+                        ]),
+                    ]),
+                ],
+            }),
+
+            Section({
+                id: 'orders',
                 title: 'Заказы',
                 description: 'Лента заказов и быстрые статусы.',
                 actions: [
@@ -506,13 +761,20 @@ function App() {
                     h('div', { className: 'grid gap-4 lg:grid-cols-3' }, [
                         h('form', { onSubmit: submitInbound, className: 'space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4' }, [
                             h('p', { className: 'text-sm font-semibold text-slate-900' }, 'Поступление'),
-                            h('input', {
-                                className: 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
-                                placeholder: 'ID товара',
-                                required: true,
-                                value: inboundForm.product_id,
-                                onChange: (event) => setInboundForm({ ...inboundForm, product_id: event.target.value }),
-                            }),
+                            h(
+                                'select',
+                                {
+                                    className:
+                                        'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-amber-500 focus:ring-amber-500',
+                                    required: true,
+                                    value: inboundForm.product_id,
+                                    onChange: (event) => setInboundForm({ ...inboundForm, product_id: event.target.value }),
+                                },
+                                [
+                                    h('option', { value: '' }, 'Выберите товар'),
+                                    ...productOptions.map((product) => h('option', { key: product.value, value: product.value }, product.label)),
+                                ],
+                            ),
                             h('div', { className: 'grid grid-cols-2 gap-2' }, [
                                 h('input', {
                                     className:
@@ -522,13 +784,19 @@ function App() {
                                     onChange: (event) =>
                                         setInboundForm({ ...inboundForm, supplier_id: event.target.value }),
                                 }),
-                                h('input', {
-                                    className:
-                                        'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
-                                    placeholder: 'Магазин (ID)',
-                                    value: inboundForm.store_id,
-                                    onChange: (event) => setInboundForm({ ...inboundForm, store_id: event.target.value }),
-                                }),
+                                h(
+                                    'select',
+                                    {
+                                        className:
+                                            'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-amber-500 focus:ring-amber-500',
+                                        value: inboundForm.store_id,
+                                        onChange: (event) => setInboundForm({ ...inboundForm, store_id: event.target.value }),
+                                    },
+                                    [
+                                        h('option', { value: '' }, 'Магазин'),
+                                        ...storeOptions.map((store) => h('option', { key: store.value, value: store.value }, store.label)),
+                                    ],
+                                ),
                             ]),
                             h('div', { className: 'grid grid-cols-2 gap-2' }, [
                                 h('input', {
@@ -598,13 +866,20 @@ function App() {
                         ]),
                         h('form', { onSubmit: submitOutbound, className: 'space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4' }, [
                             h('p', { className: 'text-sm font-semibold text-slate-900' }, 'Списание'),
-                            h('input', {
-                                className: 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
-                                placeholder: 'ID товара',
-                                required: true,
-                                value: outboundForm.product_id,
-                                onChange: (event) => setOutboundForm({ ...outboundForm, product_id: event.target.value }),
-                            }),
+                            h(
+                                'select',
+                                {
+                                    className:
+                                        'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-amber-500 focus:ring-amber-500',
+                                    required: true,
+                                    value: outboundForm.product_id,
+                                    onChange: (event) => setOutboundForm({ ...outboundForm, product_id: event.target.value }),
+                                },
+                                [
+                                    h('option', { value: '' }, 'Выберите товар'),
+                                    ...productOptions.map((product) => h('option', { key: product.value, value: product.value }, product.label)),
+                                ],
+                            ),
                             h('input', {
                                 className:
                                     'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
@@ -636,14 +911,20 @@ function App() {
                         h('form', { onSubmit: submitAdjustment, className: 'space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4' }, [
                             h('p', { className: 'text-sm font-semibold text-slate-900' }, 'Корректировка'),
                             h('div', { className: 'grid grid-cols-2 gap-2' }, [
-                                h('input', {
-                                    className:
-                                        'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
-                                    placeholder: 'ID товара',
-                                    required: true,
-                                    value: adjustForm.product_id,
-                                    onChange: (event) => setAdjustForm({ ...adjustForm, product_id: event.target.value }),
-                                }),
+                                h(
+                                    'select',
+                                    {
+                                        className:
+                                            'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-amber-500 focus:ring-amber-500',
+                                        required: true,
+                                        value: adjustForm.product_id,
+                                        onChange: (event) => setAdjustForm({ ...adjustForm, product_id: event.target.value }),
+                                    },
+                                    [
+                                        h('option', { value: '' }, 'Выберите товар'),
+                                        ...productOptions.map((product) => h('option', { key: product.value, value: product.value }, product.label)),
+                                    ],
+                                ),
                                 h('input', {
                                     className:
                                         'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
@@ -787,12 +1068,19 @@ function App() {
                     h('div', { className: 'grid gap-4 lg:grid-cols-2' }, [
                         h('form', { onSubmit: openShift, className: 'space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4' }, [
                             h('p', { className: 'text-sm font-semibold text-slate-900' }, 'Открыть смену'),
-                            h('input', {
-                                className: 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
-                                placeholder: 'Магазин (ID)',
-                                value: shiftForm.store_id,
-                                onChange: (event) => setShiftForm({ ...shiftForm, store_id: event.target.value }),
-                            }),
+                            h(
+                                'select',
+                                {
+                                    className:
+                                        'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-amber-500 focus:ring-amber-500',
+                                    value: shiftForm.store_id,
+                                    onChange: (event) => setShiftForm({ ...shiftForm, store_id: event.target.value }),
+                                },
+                                [
+                                    h('option', { value: '' }, 'Магазин'),
+                                    ...storeOptions.map((store) => h('option', { key: store.value, value: store.value }, store.label)),
+                                ],
+                            ),
                             h('input', {
                                 className: 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
                                 placeholder: 'Наличные на начало смены',
@@ -899,22 +1187,28 @@ function App() {
                     h('form', { onSubmit: createRecipe, className: 'space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4' }, [
                         h('div', { className: 'grid gap-2 md:grid-cols-2' }, [
                             h('div', { className: 'space-y-2' }, [
-                                h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Товар букет (ID)'),
-                                h('input', {
-                                    className:
-                                        'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
-                                    placeholder: 'ID товара букета',
-                                    required: true,
-                                    value: recipeForm.bouquet_product_id,
-                                    onChange: (event) => setRecipeForm({ ...recipeForm, bouquet_product_id: event.target.value }),
-                                }),
+                                h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Товар букет'),
+                                h(
+                                    'select',
+                                    {
+                                        className:
+                                            'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-amber-500 focus:ring-amber-500',
+                                        required: true,
+                                        value: recipeForm.bouquet_product_id,
+                                        onChange: (event) => setRecipeForm({ ...recipeForm, bouquet_product_id: event.target.value }),
+                                    },
+                                    [
+                                        h('option', { value: '' }, 'Выберите товар букета'),
+                                        ...productOptions.map((product) => h('option', { key: product.value, value: product.value }, product.label)),
+                                    ],
+                                ),
                             ]),
                             h('div', { className: 'space-y-2' }, [
                                 h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Название рецепта'),
                                 h('input', {
                                     className:
                                         'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
-                                    placeholder: 'Весенний базовый',
+                                    placeholder: 'Осенний базовый',
                                     required: true,
                                     value: recipeForm.name,
                                     onChange: (event) => setRecipeForm({ ...recipeForm, name: event.target.value }),
@@ -922,7 +1216,71 @@ function App() {
                             ]),
                         ]),
                         h('div', { className: 'space-y-2' }, [
-                            h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Состав (product_id:qty в строке)'),
+                            h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Состав по позициям'),
+                            h(
+                                'div',
+                                { className: 'space-y-3 rounded-lg border border-dashed border-slate-300 bg-white p-3' },
+                                recipeItems.map((item, index) =>
+                                    h('div', { key: index, className: 'grid gap-2 md:grid-cols-3' }, [
+                                        h(
+                                            'select',
+                                            {
+                                                className:
+                                                    'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-amber-500 focus:ring-amber-500',
+                                                value: item.product_id,
+                                                onChange: (event) => {
+                                                    const next = [...recipeItems];
+                                                    next[index] = { ...next[index], product_id: event.target.value };
+                                                    setRecipeItems(next);
+                                                },
+                                            },
+                                            [
+                                                h('option', { value: '' }, 'Товар'),
+                                                ...productOptions.map((product) =>
+                                                    h('option', { key: product.value, value: product.value }, product.label),
+                                                ),
+                                            ],
+                                        ),
+                                        h('input', {
+                                            className:
+                                                'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                            placeholder: 'Кол-во',
+                                            type: 'number',
+                                            step: '0.01',
+                                            value: item.qty,
+                                            onChange: (event) => {
+                                                const next = [...recipeItems];
+                                                next[index] = { ...next[index], qty: event.target.value };
+                                                setRecipeItems(next);
+                                            },
+                                        }),
+                                        h(
+                                            'button',
+                                            {
+                                                type: 'button',
+                                                className:
+                                                    'inline-flex items-center justify-center rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50',
+                                                onClick: () => setRecipeItems(recipeItems.filter((_, idx) => idx !== index)),
+                                                disabled: recipeItems.length === 1,
+                                            },
+                                            'Удалить',
+                                        ),
+                                    ]),
+                                ),
+                            ),
+                            h(
+                                'button',
+                                {
+                                    type: 'button',
+                                    className:
+                                        'inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50',
+                                    onClick: () => setRecipeItems([...recipeItems, { product_id: '', qty: '' }]),
+                                },
+                                'Добавить строку',
+                            ),
+                        ]),
+                        h('div', { className: 'space-y-2' }, [
+                            h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Быстрый ввод (product_id:qty)'),
                             h('textarea', {
                                 className:
                                     'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
@@ -931,6 +1289,7 @@ function App() {
                                 value: recipeForm.itemsInput,
                                 onChange: (event) => setRecipeForm({ ...recipeForm, itemsInput: event.target.value }),
                             }),
+                            h('p', { className: 'text-xs text-slate-500' }, 'Если таблица заполнена, именно она уйдёт в API.'),
                         ]),
                         h(
                             'button',
