@@ -19,7 +19,12 @@ class Product extends Model
         'price',
         'store_id',
         'category_id',
-        'slug'
+        'slug',
+        'type',
+        'unit',
+        'sku',
+        'price_min',
+        'tax_rate',
     ];
 
     protected $casts = [
@@ -68,6 +73,11 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function bouquetRecipe()
+    {
+        return $this->hasOne(BouquetRecipe::class, 'bouquet_product_id');
     }
 
     public function scopeActive($query)

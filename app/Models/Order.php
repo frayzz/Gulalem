@@ -18,6 +18,15 @@ class Order extends Model
         'card_message',
         'payment_method',
         'status',
+        'customer_id',
+        'delivery_type',
+        'delivery_address',
+        'delivery_time',
+        'total',
+        'discount',
+        'paid_total',
+        'payment_status',
+        'store_id',
         'city',
         'region',
     ];
@@ -30,5 +39,20 @@ class Order extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
     }
 }
