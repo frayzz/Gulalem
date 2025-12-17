@@ -3,6 +3,51 @@ import axios from 'axios';
 const { createElement: h, useEffect, useMemo, useState } = window.React;
 const { createRoot } = window.ReactDOM;
 
+const baseInputClasses =
+    'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500';
+
+const initialOrderForm = {
+    customer_name: '',
+    customer_phone: '',
+    delivery_type: 'instore',
+    delivery_address: '',
+    delivery_time: '',
+    payment_method: 'cash',
+    order_discount: '',
+    items: [{ product_id: '', qty: 1, price: '', discount: '' }],
+};
+
+const initialInboundForm = {
+    product_id: '',
+    supplier_id: '',
+    store_id: '',
+    buy_price: '',
+    qty: '',
+    arrived_at: '',
+    expires_at: '',
+    reason: '',
+    note: '',
+};
+
+const initialOutboundForm = { product_id: '', qty: '', reason: '' };
+
+const initialAdjustForm = {
+    product_id: '',
+    batch_id: '',
+    qty: '',
+    type: 'adjust',
+    reason: '',
+    note: '',
+};
+
+const initialShiftForm = { store_id: '', cash_start: '', cash_end: '', shift_id: '' };
+
+const initialRecipeForm = { bouquet_product_id: '', name: '', itemsInput: '' };
+
+const initialStoreForm = { name: '', city: '', order_channel: 'form' };
+
+const initialProductForm = { name: '', price: '', store_id: '', type: 'product', unit: 'шт' };
+
 const api = axios.create({
     baseURL: '/api/crm',
     headers: {
@@ -78,54 +123,23 @@ function App() {
     const [shifts, setShifts] = useState([]);
     const [recipes, setRecipes] = useState([]);
 
-    const [orderForm, setOrderForm] = useState({
-        customer_name: '',
-        customer_phone: '',
-        delivery_type: 'instore',
-        delivery_address: '',
-        delivery_time: '',
-        payment_method: 'cash',
-        order_discount: '',
-        items: [{ product_id: '', qty: 1, price: '', discount: '' }],
-    });
+    const [orderForm, setOrderForm] = useState(initialOrderForm);
 
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
 
-    const [inboundForm, setInboundForm] = useState({
-        product_id: '',
-        supplier_id: '',
-        store_id: '',
-        buy_price: '',
-        qty: '',
-        arrived_at: '',
-        expires_at: '',
-        reason: '',
-        note: '',
-    });
-    const [outboundForm, setOutboundForm] = useState({ product_id: '', qty: '', reason: '' });
-    const [adjustForm, setAdjustForm] = useState({
-        product_id: '',
-        batch_id: '',
-        qty: '',
-        type: 'adjust',
-        reason: '',
-        note: '',
-    });
+    const [inboundForm, setInboundForm] = useState(initialInboundForm);
+    const [outboundForm, setOutboundForm] = useState(initialOutboundForm);
+    const [adjustForm, setAdjustForm] = useState(initialAdjustForm);
 
-    const [shiftForm, setShiftForm] = useState({ store_id: '', cash_start: '', cash_end: '', shift_id: '' });
+    const [shiftForm, setShiftForm] = useState(initialShiftForm);
 
-    const [recipeForm, setRecipeForm] = useState({ bouquet_product_id: '', name: '', itemsInput: '' });
+    const [recipeForm, setRecipeForm] = useState(initialRecipeForm);
+
     const [recipeItems, setRecipeItems] = useState([{ product_id: '', qty: '' }]);
 
-    const [storeForm, setStoreForm] = useState({ name: '', city: '', order_channel: 'form' });
-    const [productForm, setProductForm] = useState({
-        name: '',
-        price: '',
-        store_id: '',
-        type: 'product',
-        unit: 'шт',
-    });
+    const [storeForm, setStoreForm] = useState(initialStoreForm);
+    const [productForm, setProductForm] = useState(initialProductForm);
 
     const handleError = (err, fallback) => {
         console.error(err);
@@ -270,17 +284,7 @@ function App() {
         try {
             await api.post('/inventory/in', inboundForm);
             setMessage('Поступление создано');
-            setInboundForm({
-                product_id: '',
-                supplier_id: '',
-                store_id: '',
-                buy_price: '',
-                qty: '',
-                arrived_at: '',
-                expires_at: '',
-                reason: '',
-                note: '',
-            });
+            setInboundForm(initialInboundForm);
             await loadInventory();
         } catch (err) {
             handleError(err, 'Не удалось добавить поступление');
@@ -293,7 +297,7 @@ function App() {
         try {
             await api.post('/inventory/out', outboundForm);
             setMessage('Списание выполнено');
-            setOutboundForm({ product_id: '', qty: '', reason: '' });
+            setOutboundForm(initialOutboundForm);
             await loadInventory();
         } catch (err) {
             handleError(err, 'Не удалось списать товары');
@@ -306,7 +310,7 @@ function App() {
         try {
             await api.post('/inventory/adjust', adjustForm);
             setMessage('Корректировка проведена');
-            setAdjustForm({ product_id: '', batch_id: '', qty: '', type: 'adjust', reason: '', note: '' });
+            setAdjustForm(initialAdjustForm);
             await loadInventory();
         } catch (err) {
             handleError(err, 'Не удалось скорректировать остатки');
@@ -340,7 +344,7 @@ function App() {
         try {
             await api.post(`/cash-shifts/${shiftForm.shift_id}/close`, { cash_end: shiftForm.cash_end });
             setMessage('Смена закрыта');
-            setShiftForm({ store_id: '', cash_start: '', cash_end: '', shift_id: '' });
+            setShiftForm(initialShiftForm);
             await loadShifts();
         } catch (err) {
             handleError(err, 'Не удалось закрыть смену');
@@ -373,7 +377,7 @@ function App() {
                 items,
             });
             setMessage('Рецепт сохранён');
-            setRecipeForm({ bouquet_product_id: '', name: '', itemsInput: '' });
+            setRecipeForm(initialRecipeForm);
             setRecipeItems([{ product_id: '', qty: '' }]);
             await loadRecipes();
         } catch (err) {
@@ -405,7 +409,7 @@ function App() {
             const { data } = await api.post('/products', payload);
             setProducts([data, ...products]);
             setMessage('Товар сохранён');
-            setProductForm({ name: '', price: '', store_id: '', type: 'product', unit: 'шт' });
+            setStoreForm({ name: '', city: '', order_channel: 'form' });
         } catch (err) {
             handleError(err, 'Не удалось сохранить товар');
         }
@@ -475,16 +479,7 @@ function App() {
         try {
             await api.post('/orders', payload);
             setMessage('Заказ оформлен');
-            setOrderForm({
-                customer_name: '',
-                customer_phone: '',
-                delivery_type: 'instore',
-                delivery_address: '',
-                delivery_time: '',
-                payment_method: 'cash',
-                order_discount: '',
-                items: [{ product_id: '', qty: 1, price: '', discount: '' }],
-            });
+            setOrderForm(initialOrderForm);
             await loadOrders();
         } catch (err) {
             handleError(err, 'Не удалось создать заказ');
@@ -557,7 +552,7 @@ function App() {
                             h('div', { className: 'space-y-2' }, [
                                 h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Имя покупателя'),
                                 h('input', {
-                                    className: 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                    className: baseInputClasses,
                                     placeholder: 'Как к вам обращаться?',
                                     value: orderForm.customer_name,
                                     onChange: (event) => setOrderForm({ ...orderForm, customer_name: event.target.value }),
@@ -566,7 +561,7 @@ function App() {
                             h('div', { className: 'space-y-2' }, [
                                 h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Телефон'),
                                 h('input', {
-                                    className: 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                    className: baseInputClasses,
                                     placeholder: '+7 (000) 000-00-00',
                                     value: orderForm.customer_phone,
                                     onChange: (event) => setOrderForm({ ...orderForm, customer_phone: event.target.value }),
@@ -594,7 +589,7 @@ function App() {
                                 h('div', { className: 'space-y-2' }, [
                                     h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Адрес доставки'),
                                     h('input', {
-                                        className: 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                        className: baseInputClasses,
                                         placeholder: 'Город, улица, дом',
                                         value: orderForm.delivery_address,
                                         onChange: (event) => setOrderForm({ ...orderForm, delivery_address: event.target.value }),
@@ -604,7 +599,7 @@ function App() {
                                     h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Когда доставить'),
                                     h('input', {
                                         type: 'datetime-local',
-                                        className: 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                        className: baseInputClasses,
                                         value: orderForm.delivery_time,
                                         onChange: (event) => setOrderForm({ ...orderForm, delivery_time: event.target.value }),
                                     }),
@@ -644,7 +639,7 @@ function App() {
                                             ],
                                         ),
                                         h('input', {
-                                            className: 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                            className: baseInputClasses,
                                             placeholder: 'Количество',
                                             type: 'number',
                                             min: '0',
@@ -654,7 +649,7 @@ function App() {
                                             required: true,
                                         }),
                                         h('input', {
-                                            className: 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                            className: baseInputClasses,
                                             placeholder: 'Цена',
                                             type: 'number',
                                             min: '0',
@@ -665,7 +660,7 @@ function App() {
                                         }),
                                         h('div', { className: 'flex items-center gap-3' }, [
                                             h('input', {
-                                                className: 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                                className: baseInputClasses,
                                                 placeholder: 'Скидка',
                                                 type: 'number',
                                                 min: '0',
@@ -710,7 +705,7 @@ function App() {
                             h('div', { className: 'space-y-2' }, [
                                 h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Скидка на заказ'),
                                 h('input', {
-                                    className: 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                    className: baseInputClasses,
                                     placeholder: '0',
                                     type: 'number',
                                     min: '0',
