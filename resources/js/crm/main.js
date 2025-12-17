@@ -78,6 +78,17 @@ function App() {
     const [shifts, setShifts] = useState([]);
     const [recipes, setRecipes] = useState([]);
 
+    const [orderForm, setOrderForm] = useState({
+        customer_name: '',
+        customer_phone: '',
+        delivery_type: 'instore',
+        delivery_address: '',
+        delivery_time: '',
+        payment_method: 'cash',
+        order_discount: '',
+        items: [{ product_id: '', qty: 1, price: '', discount: '' }],
+    });
+
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
 
@@ -188,6 +199,35 @@ function App() {
             handleError(err, 'Не удалось загрузить рецепты');
         }
     };
+
+    const setOrderItem = (index, field, value) => {
+        setOrderForm((current) => {
+            const items = [...current.items];
+            const updatedItem = { ...items[index], [field]: value };
+
+            if (field === 'product_id') {
+                const product = products.find((item) => item.id === Number(value));
+                if (product && !items[index].price) {
+                    updatedItem.price = product.price;
+                }
+            }
+
+            items[index] = updatedItem;
+            return { ...current, items };
+        });
+    };
+
+    const addOrderItem = () =>
+        setOrderForm((current) => ({
+            ...current,
+            items: [...current.items, { product_id: '', qty: 1, price: '', discount: '' }],
+        }));
+
+    const removeOrderItem = (index) =>
+        setOrderForm((current) => ({
+            ...current,
+            items: current.items.filter((_, idx) => idx !== index),
+        }));
 
     useEffect(() => {
         loadOrders();
@@ -383,6 +423,74 @@ function App() {
         [stores],
     );
 
+    const orderTotals = useMemo(() => {
+        const subtotal = orderForm.items.reduce((sum, item) => {
+            const qty = Number(item.qty || 0);
+            const price = Number(item.price || 0);
+            const discount = Number(item.discount || 0);
+            return sum + (qty * price - discount);
+        }, 0);
+
+        const orderDiscount = Number(orderForm.order_discount || 0);
+        return {
+            subtotal,
+            total: Math.max(subtotal - orderDiscount, 0),
+        };
+    }, [orderForm.items, orderForm.order_discount]);
+
+    const submitOrder = async (event) => {
+        event.preventDefault();
+        resetAlerts();
+
+        const items = orderForm.items
+            .map((item) => ({
+                product_id: Number(item.product_id),
+                qty: Number(item.qty || 0),
+                price: Number(item.price || 0),
+                discount: Number(item.discount || 0),
+            }))
+            .filter((item) => item.product_id && item.qty > 0);
+
+        if (!items.length) {
+            setError('Добавьте хотя бы одну позицию в заказ');
+            return;
+        }
+
+        const payload = {
+            delivery_type: orderForm.delivery_type,
+            delivery_address: orderForm.delivery_type === 'delivery' ? orderForm.delivery_address : null,
+            delivery_time: orderForm.delivery_time || null,
+            discount: Number(orderForm.order_discount || 0),
+            payment_method: orderForm.payment_method || null,
+            items,
+        };
+
+        if (orderForm.customer_name || orderForm.customer_phone) {
+            payload.customer = {
+                name: orderForm.customer_name,
+                phone: orderForm.customer_phone,
+            };
+        }
+
+        try {
+            await api.post('/orders', payload);
+            setMessage('Заказ оформлен');
+            setOrderForm({
+                customer_name: '',
+                customer_phone: '',
+                delivery_type: 'instore',
+                delivery_address: '',
+                delivery_time: '',
+                payment_method: 'cash',
+                order_discount: '',
+                items: [{ product_id: '', qty: 1, price: '', discount: '' }],
+            });
+            await loadOrders();
+        } catch (err) {
+            handleError(err, 'Не удалось создать заказ');
+        }
+    };
+
     return h('div', { className: 'min-h-screen bg-slate-50 px-4 py-8 md:px-8' }, [
         h('div', { className: 'mx-auto max-w-7xl space-y-6' }, [
             h('header', { className: 'flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between' }, [
@@ -438,6 +546,209 @@ function App() {
             error
                 ? h('div', { className: 'rounded-xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-800' }, error)
                 : null,
+
+            Section({
+                id: 'pos',
+                title: 'Быстрое создание заказа',
+                description: 'Оформляйте заказ из зала или по телефону без переходов на другие экраны.',
+                children: [
+                    h('form', { onSubmit: submitOrder, className: 'space-y-4 rounded-2xl border border-slate-200 bg-slate-50 p-4' }, [
+                        h('div', { className: 'grid gap-4 lg:grid-cols-3' }, [
+                            h('div', { className: 'space-y-2' }, [
+                                h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Имя покупателя'),
+                                h('input', {
+                                    className: 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                    placeholder: 'Как к вам обращаться?',
+                                    value: orderForm.customer_name,
+                                    onChange: (event) => setOrderForm({ ...orderForm, customer_name: event.target.value }),
+                                }),
+                            ]),
+                            h('div', { className: 'space-y-2' }, [
+                                h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Телефон'),
+                                h('input', {
+                                    className: 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                    placeholder: '+7 (000) 000-00-00',
+                                    value: orderForm.customer_phone,
+                                    onChange: (event) => setOrderForm({ ...orderForm, customer_phone: event.target.value }),
+                                }),
+                            ]),
+                            h('div', { className: 'space-y-2' }, [
+                                h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Тип доставки'),
+                                h(
+                                    'select',
+                                    {
+                                        className: 'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-amber-500 focus:ring-amber-500',
+                                        value: orderForm.delivery_type,
+                                        onChange: (event) => setOrderForm({ ...orderForm, delivery_type: event.target.value }),
+                                    },
+                                    [
+                                        h('option', { value: 'instore' }, 'В зале'),
+                                        h('option', { value: 'pickup' }, 'Самовывоз'),
+                                        h('option', { value: 'delivery' }, 'Доставка'),
+                                    ],
+                                ),
+                            ]),
+                        ]),
+                        orderForm.delivery_type === 'delivery'
+                            ? h('div', { className: 'grid gap-4 lg:grid-cols-2' }, [
+                                h('div', { className: 'space-y-2' }, [
+                                    h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Адрес доставки'),
+                                    h('input', {
+                                        className: 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                        placeholder: 'Город, улица, дом',
+                                        value: orderForm.delivery_address,
+                                        onChange: (event) => setOrderForm({ ...orderForm, delivery_address: event.target.value }),
+                                    }),
+                                ]),
+                                h('div', { className: 'space-y-2' }, [
+                                    h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Когда доставить'),
+                                    h('input', {
+                                        type: 'datetime-local',
+                                        className: 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                        value: orderForm.delivery_time,
+                                        onChange: (event) => setOrderForm({ ...orderForm, delivery_time: event.target.value }),
+                                    }),
+                                ]),
+                            ])
+                            : null,
+
+                        h('div', { className: 'space-y-3 rounded-xl border border-slate-200 bg-white p-3' }, [
+                            h('div', { className: 'flex items-center justify-between' }, [
+                                h('p', { className: 'text-sm font-semibold text-slate-900' }, 'Позиции'),
+                                h(
+                                    'button',
+                                    {
+                                        type: 'button',
+                                        onClick: addOrderItem,
+                                        className: 'inline-flex items-center gap-2 rounded-lg border border-amber-200 px-3 py-1 text-xs font-semibold text-amber-700 hover:bg-amber-50',
+                                    },
+                                    '+ Добавить',
+                                ),
+                            ]),
+                            h(
+                                'div',
+                                { className: 'space-y-3' },
+                                orderForm.items.map((item, index) =>
+                                    h('div', { key: index, className: 'grid gap-3 rounded-lg border border-slate-200 p-3 sm:grid-cols-2 lg:grid-cols-4' }, [
+                                        h(
+                                            'select',
+                                            {
+                                                className: 'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-amber-500 focus:ring-amber-500',
+                                                value: item.product_id,
+                                                onChange: (event) => setOrderItem(index, 'product_id', event.target.value),
+                                                required: true,
+                                            },
+                                            [
+                                                h('option', { value: '' }, 'Товар'),
+                                                ...productOptions.map((product) => h('option', { key: product.value, value: product.value }, product.label)),
+                                            ],
+                                        ),
+                                        h('input', {
+                                            className: 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                            placeholder: 'Количество',
+                                            type: 'number',
+                                            min: '0',
+                                            step: '0.1',
+                                            value: item.qty,
+                                            onChange: (event) => setOrderItem(index, 'qty', event.target.value),
+                                            required: true,
+                                        }),
+                                        h('input', {
+                                            className: 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                            placeholder: 'Цена',
+                                            type: 'number',
+                                            min: '0',
+                                            step: '0.01',
+                                            value: item.price,
+                                            onChange: (event) => setOrderItem(index, 'price', event.target.value),
+                                            required: true,
+                                        }),
+                                        h('div', { className: 'flex items-center gap-3' }, [
+                                            h('input', {
+                                                className: 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                                placeholder: 'Скидка',
+                                                type: 'number',
+                                                min: '0',
+                                                step: '0.01',
+                                                value: item.discount,
+                                                onChange: (event) => setOrderItem(index, 'discount', event.target.value),
+                                            }),
+                                            orderForm.items.length > 1
+                                                ? h(
+                                                    'button',
+                                                    {
+                                                        type: 'button',
+                                                        onClick: () => removeOrderItem(index),
+                                                        className: 'text-xs font-semibold text-rose-600 hover:text-rose-500',
+                                                    },
+                                                    'Удалить',
+                                                )
+                                                : null,
+                                        ]),
+                                    ]),
+                                ),
+                            ),
+                        ]),
+
+                        h('div', { className: 'grid gap-4 lg:grid-cols-3' }, [
+                            h('div', { className: 'space-y-2' }, [
+                                h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Оплата'),
+                                h(
+                                    'select',
+                                    {
+                                        className: 'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-amber-500 focus:ring-amber-500',
+                                        value: orderForm.payment_method,
+                                        onChange: (event) => setOrderForm({ ...orderForm, payment_method: event.target.value }),
+                                    },
+                                    [
+                                        h('option', { value: 'cash' }, 'Наличные'),
+                                        h('option', { value: 'card' }, 'Карта'),
+                                        h('option', { value: 'online' }, 'Онлайн-оплата'),
+                                    ],
+                                ),
+                            ]),
+                            h('div', { className: 'space-y-2' }, [
+                                h('label', { className: 'block text-xs font-semibold uppercase text-slate-500' }, 'Скидка на заказ'),
+                                h('input', {
+                                    className: 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500',
+                                    placeholder: '0',
+                                    type: 'number',
+                                    min: '0',
+                                    step: '0.01',
+                                    value: orderForm.order_discount,
+                                    onChange: (event) => setOrderForm({ ...orderForm, order_discount: event.target.value }),
+                                }),
+                            ]),
+                            h('div', { className: 'rounded-xl bg-white p-3 text-sm text-slate-800 shadow-inner' }, [
+                                h('div', { className: 'flex items-center justify-between' }, [
+                                    h('span', { className: 'text-slate-500' }, 'Сумма'),
+                                    h('span', { className: 'font-semibold' }, `${orderTotals.subtotal.toFixed(2)} ₸`),
+                                ]),
+                                h('div', { className: 'mt-1 flex items-center justify-between text-amber-700' }, [
+                                    h('span', { className: 'text-sm' }, 'К оплате'),
+                                    h('span', { className: 'text-lg font-bold' }, `${orderTotals.total.toFixed(2)} ₸`),
+                                ]),
+                            ]),
+                        ]),
+
+                        h(
+                            'div',
+                            { className: 'flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between' },
+                            [
+                                h('p', { className: 'text-xs text-slate-500' }, 'Создание заказа сразу отправит его в список ниже.'),
+                                h(
+                                    'button',
+                                    {
+                                        type: 'submit',
+                                        className: 'inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-5 py-2 text-sm font-semibold text-white shadow hover:bg-slate-800',
+                                    },
+                                    'Сохранить заказ',
+                                ),
+                            ],
+                        ),
+                    ]),
+                ],
+            }),
 
             Section({
                 id: 'catalog',
