@@ -5,20 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Payment extends Model
+class OrderItem extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'order_id',
-        'method',
-        'amount',
-        'paid_at',
-        'shift_id',
-    ];
-
-    protected $casts = [
-        'paid_at' => 'datetime',
+        'product_id',
+        'qty',
+        'price',
+        'discount',
+        'total',
     ];
 
     public function order()
@@ -26,8 +23,8 @@ class Payment extends Model
         return $this->belongsTo(Order::class);
     }
 
-    public function shift()
+    public function product()
     {
-        return $this->belongsTo(CashShift::class, 'shift_id');
+        return $this->belongsTo(Product::class);
     }
 }

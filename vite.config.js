@@ -8,6 +8,7 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/js/app.js',
                 'resources/js/orders.js',
+                'resources/js/crm/main.js',
             ],
             refresh: true,
         }),

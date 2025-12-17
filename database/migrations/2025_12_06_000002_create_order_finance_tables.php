@@ -19,16 +19,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('payments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('order_id')->constrained('orders');
-            $table->enum('method', ['cash', 'card', 'transfer', 'mixed']);
-            $table->decimal('amount', 12, 2);
-            $table->timestamp('paid_at')->useCurrent();
-            $table->foreignId('shift_id')->nullable()->constrained('cash_shifts');
-            $table->timestamps();
-        });
-
         Schema::create('cash_shifts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
@@ -38,6 +28,16 @@ return new class extends Migration
             $table->decimal('cash_start', 12, 2);
             $table->decimal('cash_end', 12, 2)->nullable();
             $table->decimal('cash_diff', 12, 2)->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('payments', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('order_id')->constrained('orders');
+            $table->enum('method', ['cash', 'card', 'transfer', 'mixed']);
+            $table->decimal('amount', 12, 2);
+            $table->timestamp('paid_at')->useCurrent();
+            $table->foreignId('shift_id')->nullable()->constrained('cash_shifts');
             $table->timestamps();
         });
     }

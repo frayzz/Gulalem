@@ -24,6 +24,8 @@ Route::get('/order/{slug}/', [OrderController::class, 'index'])->name('order.ind
 Route::post('/submit-order', [OrderController::class, 'store'])->name('submit.order');
 // Store
 Route::get('/store/{slug}', [StoreController::class, 'show'])->name('store.show');
+// CRM
+Route::view('/crm', 'crm')->name('crm.react');
 
 // SMS Mobizon Verif
 Route::post('/send-verification-code', [OrderController::class, 'sendVerificationCode'])->name('send.verification.code');
